@@ -1,7 +1,6 @@
 package info.dourok.weimagepicker;
 
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -32,12 +31,21 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
             MediaStore.Images.Media.MINI_THUMB_MAGIC
     };
     private final static String BUCKET_ORDER = MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
-    private final static int BUCKET_LOADER_ID = 0x1234;
+    private final static int BUCKET_LOADER_ID = 1234;
     private FragmentActivity mContext;
     private List<Bucket> mBucketList;
+    private PrepareCallback mPrepareCallback;
+
+    public interface PrepareCallback {
+        public void onPrepared();
+    }
 
     public ImageContentManager(FragmentActivity context) {
         this.mContext = context;
+    }
+
+    public void prepare(PrepareCallback callback) {
+        mPrepareCallback = callback;
         mContext.getSupportLoaderManager().initLoader(BUCKET_LOADER_ID, null, this);
     }
 
@@ -57,7 +65,7 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
                     null,
                     ImageContentManager.BUCKET_ORDER);
         } else {
-            throw new IllegalArgumentException("Unknown loader id");
+            throw new IllegalArgumentException("Unknown loader id:" + id);
         }
     }
 
@@ -70,6 +78,7 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
         mBucketList = new ArrayList<>();
         if (data.moveToFirst()) {
             int bIdColumn = data.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
@@ -77,7 +86,7 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
             int bMiniThumbColumn = data.getColumnIndex(MediaStore.Images.Media.MINI_THUMB_MAGIC);
             Bucket preBucket = null;
             do {
-                DatabaseUtils.dumpCurrentRow(data, System.out);
+                //DatabaseUtils.dumpCurrentRow(data, System.out);
                 long bId = data.getLong(bIdColumn);
                 if (preBucket == null || bId != preBucket.getId()) {
                     preBucket = new Bucket(bId, data.getString(bNameColumn), data.getLong(bMiniThumbColumn));
@@ -87,6 +96,7 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
                 }
             } while (data.moveToNext());
         }
+        mPrepareCallback.onPrepared();
     }
 
     public List<Bucket> getBucketList() {

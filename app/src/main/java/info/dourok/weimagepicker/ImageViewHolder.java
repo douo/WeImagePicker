@@ -20,6 +20,7 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void populate(Bitmap bitmap, boolean select) {
+        System.out.println(getAdapterPosition() + ":" + bitmap.getWidth() + "/" + bitmap.getHeight());
         image.setImageBitmap(bitmap);
         selector.setChecked(select);
         selector.setSelected(select);

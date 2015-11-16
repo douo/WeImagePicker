@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
-import android.view.View;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 /**
@@ -23,17 +23,19 @@ public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> {
 
     @Override
     public void onBindViewHolder(ImageViewHolder viewHolder, Cursor cursor) {
-        Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(mContext.getContentResolver(), cursor.getColumnIndex(MediaStore.Images.Media._ID), MediaStore.Images.Thumbnails.MINI_KIND, null);
+        System.out.println();
+        Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(mContext.getContentResolver(), cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media._ID)), MediaStore.Images.Thumbnails.MINI_KIND, null);
         viewHolder.populate(bitmap, false);
     }
 
 
     @Override
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(mContext);
         if (viewType == VIEW_TYPE_CAMERA) {
-            return new ImageViewHolder(View.inflate(mContext, R.layout.item_image, parent));
+            return new ImageViewHolder(inflater.inflate(R.layout.item_image, parent, false));
         } else {
-            return new ImageViewHolder(View.inflate(mContext, R.layout.item_image, parent));
+            return new ImageViewHolder(inflater.inflate(R.layout.item_image, parent, false));
         }
     }
 
