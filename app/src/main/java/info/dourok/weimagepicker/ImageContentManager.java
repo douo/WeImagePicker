@@ -1,5 +1,6 @@
 package info.dourok.weimagepicker;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,23 +22,24 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
             MediaStore.Images.Media._ID,
             MediaStore.Images.Media.DATE_ADDED,
             MediaStore.Images.Media.DISPLAY_NAME,
-            MediaStore.Images.Media.MINI_THUMB_MAGIC
     };
     public final static String ORDER = MediaStore.Images.Media.DATE_ADDED;
 
     private final static String[] BUCKET_PROJECTION = new String[]{
+            MediaStore.Images.Media._ID,
             MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
             MediaStore.Images.Media.BUCKET_ID,
-            MediaStore.Images.Media.MINI_THUMB_MAGIC
     };
     private final static String BUCKET_ORDER = MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
     private final static int BUCKET_LOADER_ID = 1234;
     private FragmentActivity mContext;
     private List<Bucket> mBucketList;
+    private Bucket mAllImageBucket;
     private PrepareCallback mPrepareCallback;
 
+
     public interface PrepareCallback {
-        public void onPrepared();
+        void onPrepared();
     }
 
     public ImageContentManager(FragmentActivity context) {
@@ -49,12 +51,6 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
         mContext.getSupportLoaderManager().initLoader(BUCKET_LOADER_ID, null, this);
     }
 
-    /**
-     * @return CursorLoader which load all images
-     */
-    public CursorLoader createLoader() {
-        return new CursorLoader(mContext, URI, PROJECTION, null, null, ImageContentManager.ORDER);
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -80,26 +76,40 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
         mBucketList = new ArrayList<>();
+        long firstImageId = 0;
         if (data.moveToFirst()) {
             int bIdColumn = data.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
             int bNameColumn = data.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-            int bMiniThumbColumn = data.getColumnIndex(MediaStore.Images.Media.MINI_THUMB_MAGIC);
-            Bucket preBucket = null;
+            int idColumn = data.getColumnIndex(MediaStore.Images.Media._ID);
+            firstImageId = data.getLong(idColumn);
+            SubBucket preBucket = null;
             do {
                 //DatabaseUtils.dumpCurrentRow(data, System.out);
                 long bId = data.getLong(bIdColumn);
                 if (preBucket == null || bId != preBucket.getId()) {
-                    preBucket = new Bucket(bId, data.getString(bNameColumn), data.getLong(bMiniThumbColumn));
+                    preBucket = new SubBucket(bId, data.getString(bNameColumn), data.getLong(idColumn));
                     mBucketList.add(preBucket);
                 } else {
                     preBucket.count();
                 }
             } while (data.moveToNext());
         }
+        mAllImageBucket = new AllImageBucket("All Images", data.getCount(), firstImageId);
+        data.close();
         mPrepareCallback.onPrepared();
     }
 
-    public List<Bucket> getBucketList() {
+    public Bucket getAllImageBucket() {
+        return mAllImageBucket;
+    }
+
+    public List<Bucket> getAllBucketList() {
+        List<Bucket> list = getSubBucketList();
+        list.add(0, getAllImageBucket());
+        return list;
+    }
+
+    public List<Bucket> getSubBucketList() {
         return new ArrayList<>(mBucketList);
     }
 
@@ -112,6 +122,42 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
     public void onLoaderReset(Loader<Cursor> loader) {
         if (mBucketList != null) {
             mBucketList.clear();
+        }
+    }
+
+    private static class AllImageBucket implements Bucket {
+        private String name;
+        private int count;
+        private long firstImageId;
+
+        public AllImageBucket(String name, int count, long firstImageId) {
+            this.name = name;
+            this.count = count;
+            this.firstImageId = firstImageId;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public int getCount() {
+            return count;
+        }
+
+        @Override
+        public long getFirstImageId() {
+            return firstImageId;
+        }
+
+        @Override
+        public CursorLoader createLoader(Context context) {
+            return new CursorLoader(context, URI,
+                    PROJECTION,
+                    null,
+                    null,
+                    ImageContentManager.ORDER);
         }
     }
 }
