@@ -1,6 +1,7 @@
 package info.dourok.weimagepicker;
 
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -33,6 +34,18 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+                                            int space = getResources().getDimensionPixelSize(R.dimen.grid_item_margin);
+
+                                            @Override
+                                            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                                                outRect.right = space;
+                                                outRect.left = space;
+                                                outRect.bottom = space;
+                                                outRect.top = space;
+                                            }
+                                        }
+        );
         mRecyclerView.setLayoutManager(layoutManager);
 
         View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner,
