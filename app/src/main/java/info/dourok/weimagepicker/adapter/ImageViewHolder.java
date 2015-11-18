@@ -1,4 +1,4 @@
-package info.dourok.weimagepicker;
+package info.dourok.weimagepicker.adapter;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -14,6 +14,8 @@ import android.widget.ImageView;
 import info.dourok.lruimage.LruImage;
 import info.dourok.lruimage.LruImageException;
 import info.dourok.lruimage.LruImageTask;
+import info.dourok.weimagepicker.R;
+import info.dourok.weimagepicker.image.SelectedBucket;
 
 /**
  * Created by John on 2015/11/16.

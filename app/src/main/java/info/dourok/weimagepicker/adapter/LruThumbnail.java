@@ -1,4 +1,4 @@
-package info.dourok.weimagepicker;
+package info.dourok.weimagepicker.adapter;
 
 import android.content.ContentResolver;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package info.dourok.weimagepicker;/*
+package info.dourok.weimagepicker.adapter;/*
 
 * Copyright (C) 2014 skyfish.jy@gmail.com
 

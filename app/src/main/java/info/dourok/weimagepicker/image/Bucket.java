@@ -1,4 +1,4 @@
-package info.dourok.weimagepicker;
+package info.dourok.weimagepicker.image;
 
 import android.content.Context;
 import android.support.v4.content.CursorLoader;

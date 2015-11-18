@@ -1,4 +1,4 @@
-package info.dourok.weimagepicker;
+package info.dourok.weimagepicker.image;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class SelectedBucket implements Bucket {
     private List<Long> selectedIds;
-    private final static String KEY_BUCKET = "info.dourok.weimagepicker.SelectedBucket";
+    private final static String KEY_BUCKET = "info.dourok.weimagepicker.image.SelectedBucket";
 
     private SelectedBucket(List<Long> list) {
         selectedIds = list;

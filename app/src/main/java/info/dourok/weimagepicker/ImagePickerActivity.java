@@ -19,6 +19,13 @@ import android.widget.Spinner;
 
 import java.util.List;
 
+import info.dourok.weimagepicker.adapter.BucketAdapter;
+import info.dourok.weimagepicker.adapter.ImageAdapter;
+import info.dourok.weimagepicker.adapter.OnImageSelectListener;
+import info.dourok.weimagepicker.image.Bucket;
+import info.dourok.weimagepicker.image.ImageContentManager;
+import info.dourok.weimagepicker.image.SelectedBucket;
+
 public class ImagePickerActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     RecyclerView mRecyclerView;
     Spinner mBucketSpinner;

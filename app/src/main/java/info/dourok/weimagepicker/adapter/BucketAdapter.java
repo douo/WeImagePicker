@@ -1,4 +1,4 @@
-package info.dourok.weimagepicker;
+package info.dourok.weimagepicker.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+
+import info.dourok.weimagepicker.R;
+import info.dourok.weimagepicker.image.Bucket;
 
 /**
  * Created by John on 2015/11/17.

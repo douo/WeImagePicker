@@ -2,7 +2,7 @@
  * Copyright (c) 2015. Tiou Lims, All rights reserved.
  */
 
-package info.dourok.weimagepicker;
+package info.dourok.weimagepicker.adapter;
 
 import android.content.Context;
 import android.util.AttributeSet;
