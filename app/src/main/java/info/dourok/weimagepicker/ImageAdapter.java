@@ -2,8 +2,6 @@ package info.dourok.weimagepicker;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -14,18 +12,20 @@ public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> {
     private static final int VIEW_TYPE_CAMERA = 0x1;
     private static final int VIEW_TYPE_IMAGE = 0x2;
     private boolean supportCamera;
+    private SelectedBucket selectedBucket;
+    private OnImageSelectListener selectListener;
 
-    public ImageAdapter(Context context, Cursor cursor, boolean supprotCamera) {
+    public ImageAdapter(Context context, Cursor cursor, SelectedBucket selectedBucket, boolean supprotCamera, OnImageSelectListener listener) {
         super(context, cursor);
         this.supportCamera = supprotCamera;
+        this.selectedBucket = selectedBucket;
+        this.selectListener = listener;
     }
 
 
     @Override
     public void onBindViewHolder(ImageViewHolder viewHolder, Cursor cursor) {
-        System.out.println();
-        Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(mContext.getContentResolver(), cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media._ID)), MediaStore.Images.Thumbnails.MINI_KIND, null);
-        viewHolder.populate(bitmap, false);
+        viewHolder.populate(mContext, mContext.getContentResolver(), cursor, selectedBucket);
     }
 
 
@@ -33,9 +33,9 @@ public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> {
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         if (viewType == VIEW_TYPE_CAMERA) {
-            return new ImageViewHolder(inflater.inflate(R.layout.item_image, parent, false));
+            return new ImageViewHolder(inflater.inflate(R.layout.item_image, parent, false), selectedBucket, selectListener);
         } else {
-            return new ImageViewHolder(inflater.inflate(R.layout.item_image, parent, false));
+            return new ImageViewHolder(inflater.inflate(R.layout.item_image, parent, false), selectedBucket, selectListener);
         }
     }
 

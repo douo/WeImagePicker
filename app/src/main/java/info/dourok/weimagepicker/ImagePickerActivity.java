@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +24,16 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     Spinner mBucketSpinner;
     ImageContentManager mManager;
     List<Bucket> mBuckets;
+    SelectedBucket mSelectedBucket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            mSelectedBucket = SelectedBucket.getFromBundle(savedInstanceState);
+        } else {
+            mSelectedBucket = new SelectedBucket();
+        }
         setContentView(R.layout.activity_image_picker);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -80,20 +87,35 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
 
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        mSelectedBucket.putIntoBundle(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        System.out.println("onCreateLoader:" + id);
+        d("onCreateLoader:" + id);
         return mBuckets.get(id).createLoader(this);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        System.out.println("onLoadFinished:" + loader.getId());
-        ImageAdapter adapter = new ImageAdapter(this, data, false);
+        d("onLoadFinished:" + loader.getId());
+        ImageAdapter adapter = new ImageAdapter(this, data, mSelectedBucket, false, new OnImageSelectListener() {
+            @Override
+            public void onImageSelected(long imageId) {
+                d("onImageSelected:" + imageId);
+            }
+        });
         mRecyclerView.setAdapter(adapter);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        System.out.println("onLoaderReset:" + loader.getId());
+        d("onLoaderReset:" + loader.getId());
+    }
+
+    private void d(String text) {
+        Log.d("ImagePickerActivity", text);
     }
 }
