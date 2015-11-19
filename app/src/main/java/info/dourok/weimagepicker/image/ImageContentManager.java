@@ -1,6 +1,5 @@
 package info.dourok.weimagepicker.image;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -125,39 +124,4 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
         }
     }
 
-    private static class AllImageBucket implements Bucket {
-        private String name;
-        private int count;
-        private long firstImageId;
-
-        public AllImageBucket(String name, int count, long firstImageId) {
-            this.name = name;
-            this.count = count;
-            this.firstImageId = firstImageId;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public int getCount() {
-            return count;
-        }
-
-        @Override
-        public long getFirstImageId() {
-            return firstImageId;
-        }
-
-        @Override
-        public CursorLoader createLoader(Context context) {
-            return new CursorLoader(context, URI,
-                    PROJECTION,
-                    null,
-                    null,
-                    ImageContentManager.ORDER);
-        }
-    }
 }

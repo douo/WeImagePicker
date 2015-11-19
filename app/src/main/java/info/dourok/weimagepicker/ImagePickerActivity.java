@@ -1,8 +1,13 @@
 package info.dourok.weimagepicker;
 
+import android.content.ClipData;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Rect;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
@@ -12,6 +17,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -37,7 +44,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            mSelectedBucket = SelectedBucket.getFromBundle(savedInstanceState);
+            mSelectedBucket = Bucket.fromBundle(savedInstanceState, SelectedBucket.class);
         } else {
             mSelectedBucket = new SelectedBucket();
         }
@@ -45,6 +52,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
@@ -112,6 +120,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
             @Override
             public void onImageSelected(long imageId) {
                 d("onImageSelected:" + imageId);
+                supportInvalidateOptionsMenu();
             }
         });
         mRecyclerView.setAdapter(adapter);
@@ -124,5 +133,53 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
 
     private void d(String text) {
         Log.d("ImagePickerActivity", text);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_image_picker, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.action_done);
+        int count = mSelectedBucket.getCount();
+        if (count > 0) {
+            item.setVisible(true);
+            item.setTitle(getString(R.string.action_done, count));
+        } else {
+            item.setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_done) {
+            done(mSelectedBucket.toUriArray());
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    protected void done(@NonNull Uri[] uris) {
+        if (uris.length > 0) {
+            Intent data = new Intent();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                ClipData clipData = ClipData.newUri(getContentResolver(), "ImagePicker", uris[0]);
+                for (int i = 1; i < uris.length; i++) {
+                    clipData.addItem(new ClipData.Item(uris[i]));
+                }
+                data.setClipData(clipData);
+            }
+            mSelectedBucket.putIntoIntent(data);
+            setResult(RESULT_OK, data);
+            finish();
+        } else {
+            setResult(RESULT_CANCELED);
+            finish();
+        }
     }
 }

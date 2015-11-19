@@ -1,8 +1,10 @@
 package info.dourok.weimagepicker.image;
 
+import android.content.ContentUris;
 import android.content.Context;
-import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 
 import java.util.ArrayList;
@@ -11,9 +13,10 @@ import java.util.List;
 /**
  * Created by John on 2015/11/18.
  */
-public class SelectedBucket implements Bucket {
+public class SelectedBucket extends Bucket {
     private List<Long> selectedIds;
     private final static String KEY_BUCKET = "info.dourok.weimagepicker.image.SelectedBucket";
+
 
     private SelectedBucket(List<Long> list) {
         selectedIds = list;
@@ -82,8 +85,19 @@ public class SelectedBucket implements Bucket {
 
     @Override
     public CursorLoader createLoader(Context context) {
-        //TODO
-        return null;
+        StringBuilder sb = new StringBuilder();
+        sb.append(MediaStore.Images.Media._ID).append(" IN (");
+        boolean firstTime = true;
+        for (long id : selectedIds) {
+            if (firstTime) {
+                firstTime = false;
+            } else {
+                sb.append(",");
+            }
+            sb.append(id);
+        }
+        sb.append(")");
+        return new CursorLoader(context, ImageContentManager.URI, ImageContentManager.PROJECTION, sb.toString(), null, null);
     }
 
     public long[] toArray() {
@@ -94,18 +108,21 @@ public class SelectedBucket implements Bucket {
         return ids;
     }
 
-    public void putIntoIntent(Intent intent) {
-        intent.putExtra(KEY_BUCKET, toArray());
+    public Uri[] toUriArray() {
+        Uri[] uris = new Uri[getCount()];
+        for (int i = 0; i < uris.length; i++) {
+            uris[i] = ContentUris.withAppendedId(ImageContentManager.URI, selectedIds.get(i));
+        }
+        return uris;
     }
 
+
+    @Override
     public void putIntoBundle(Bundle bundle) {
         bundle.putLongArray(KEY_BUCKET, toArray());
     }
 
-    public void readFromIntent(Intent intent) {
-        readFromBundle(intent.getExtras());
-    }
-
+    @Override
     public void readFromBundle(Bundle bundle) {
         long ids[] = bundle.getLongArray(KEY_BUCKET);
         List<Long> list = new ArrayList<>(ids.length);
@@ -115,17 +132,4 @@ public class SelectedBucket implements Bucket {
         selectedIds = list;
     }
 
-
-    public static SelectedBucket getFromIntent(Intent intent) {
-        return getFromBundle(intent.getExtras());
-    }
-
-    public static SelectedBucket getFromBundle(Bundle bundle) {
-        long ids[] = bundle.getLongArray(KEY_BUCKET);
-        List<Long> list = new ArrayList<>(ids.length);
-        for (int i = 0; i < ids.length; i++) {
-            list.add(ids[i]);
-        }
-        return new SelectedBucket(list);
-    }
 }
