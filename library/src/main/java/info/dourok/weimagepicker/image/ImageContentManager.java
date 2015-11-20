@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,7 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
+        d("onLoadFinished");
         mBucketList = new ArrayList<>();
         long firstImageId = 0;
         if (data.moveToFirst()) {
@@ -121,9 +122,14 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
      */
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        d("onLoaderReset");
         if (mBucketList != null) {
             mBucketList.clear();
         }
+    }
+
+    private void d(String msg) {
+        Log.d(ImageContentManager.class.getName(), msg);
     }
 
 }

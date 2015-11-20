@@ -3,6 +3,7 @@ package info.dourok.weimagepicker.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import info.dourok.lruimage.LruImage;
+import info.dourok.lruimage.LruImageException;
+import info.dourok.lruimage.LruImageTask;
 import info.dourok.weimagepicker.R;
 import info.dourok.weimagepicker.image.Bucket;
 
@@ -51,9 +55,11 @@ public class BucketAdapter extends BaseAdapter {
         public CheckBox checkbox;
     }
 
+    LruImageTask currentTask;
+
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+        final ViewHolder holder;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
             convertView = inflater.inflate(R.layout.weimagepicker__item_bucket, parent, false);
@@ -67,8 +73,27 @@ public class BucketAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         Bucket bucket = getItem(position);
-        Bitmap bm = MediaStore.Images.Thumbnails.getThumbnail(mContext.getContentResolver(), bucket.getFirstImageId(), MediaStore.Images.Thumbnails.MINI_KIND, null);
-        holder.image.setImageBitmap(bm);
+        if (currentTask != null) {
+            currentTask.cancel();
+        }
+        holder.image.setImageResource(R.drawable.weimagepicker__empty_image);
+        LruThumbnail thumbnail = new LruThumbnail(mContext.getContentResolver(), bucket.getFirstImageId(), MediaStore.Images.Thumbnails.MINI_KIND);
+        currentTask = new LruImageTask(mContext, thumbnail, new LruImageTask.OnCompleteListener() {
+            @Override
+            public void onSuccess(LruImage lruImage, Bitmap bitmap) {
+                holder.image.setImageBitmap(bitmap);
+            }
+
+            @Override
+            public void onFailure(LruImage lruImage, LruImageException e) {
+                //d(getAdapterPosition() + " failure:" + e.getMessage());
+            }
+
+            @Override
+            public void cancel() {
+                //d("cancel:" + getAdapterPosition());
+            }
+        }).execute();
         holder.count.setText(bucket.getCount() + "张");
         holder.name.setText(bucket.getName());
         return convertView;
@@ -85,5 +110,10 @@ public class BucketAdapter extends BaseAdapter {
         TextView textView = (TextView) convertView.findViewById(android.R.id.text1);
         textView.setText(getItem(position).getName());
         return convertView;
+    }
+
+
+    private void d(String s) {
+        Log.d(BucketAdapter.class.getName(), s);
     }
 }
