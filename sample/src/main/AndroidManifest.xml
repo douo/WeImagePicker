@@ -21,9 +21,10 @@
         <activity
             android:name="info.dourok.weimagepicker.ImagePickerActivity"
             android:label="@string/weimagepicker__title_activity_image_picker"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="info.dourok.weimagepicker.ImagePreviewActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

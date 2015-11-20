@@ -28,29 +28,40 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
     SelectedBucket bucket;
     private OnImageSelectListener selectListener;
 
-    public ImageViewHolder(View itemView, SelectedBucket bucket, OnImageSelectListener listener) {
+    public ImageViewHolder(View itemView, boolean clickable, SelectedBucket bucket, OnImageSelectListener listener) {
         super(itemView);
         this.bucket = bucket;
         selectListener = listener;
         selector = (ImageButton) itemView.findViewById(R.id.selector);
         image = (ImageView) itemView.findViewById(R.id.image);
         mask = itemView.findViewById(R.id.mask);
-        View.OnClickListener onClickListener = new View.OnClickListener() {
+        View.OnClickListener onSelect = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 long id = (long) selector.getTag();
                 boolean selected = ImageViewHolder.this.bucket.toggle(id);
-                v.setSelected(selected);
+                selector.setSelected(selected);
                 if (selected) {
                     mask.setVisibility(View.VISIBLE);
                 } else {
                     mask.setVisibility(View.INVISIBLE);
                 }
-                selectListener.onImageSelected(id);
+                selectListener.onImageSelected(id, getAdapterPosition());
             }
         };
-        selector.setOnClickListener(onClickListener);
-        itemView.setOnClickListener(onClickListener);
+        selector.setOnClickListener(onSelect);
+        if (clickable) {
+            View.OnClickListener onClick = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    long id = (long) selector.getTag();
+                    selectListener.onImageClick(id, getAdapterPosition());
+                }
+            };
+            itemView.setOnClickListener(onClick);
+        } else {
+            itemView.setOnClickListener(onSelect);
+        }
     }
 
 
@@ -77,6 +88,7 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
             }
         }).execute();
         boolean selected = bucket.isSelected(origId);
+        itemView.setTag(origId);
         selector.setTag(origId);
         selector.setSelected(selected);
         if (selected) {

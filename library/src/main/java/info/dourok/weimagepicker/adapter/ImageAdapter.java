@@ -17,10 +17,12 @@ public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> {
     private boolean supportCamera;
     private SelectedBucket selectedBucket;
     private OnImageSelectListener selectListener;
+    private boolean clickable;
 
-    public ImageAdapter(Context context, Cursor cursor, SelectedBucket selectedBucket, boolean supprotCamera, OnImageSelectListener listener) {
+    public ImageAdapter(Context context, Cursor cursor, SelectedBucket selectedBucket, boolean clickable, boolean supprotCamera, OnImageSelectListener listener) {
         super(context, cursor);
         this.supportCamera = supprotCamera;
+        this.clickable = clickable;
         this.selectedBucket = selectedBucket;
         this.selectListener = listener;
     }
@@ -36,9 +38,9 @@ public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> {
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         if (viewType == VIEW_TYPE_CAMERA) {
-            return new ImageViewHolder(inflater.inflate(R.layout.weimagepicker__item_image, parent, false), selectedBucket, selectListener);
+            return new ImageViewHolder(inflater.inflate(R.layout.weimagepicker__item_image, parent, false), clickable, selectedBucket, selectListener);
         } else {
-            return new ImageViewHolder(inflater.inflate(R.layout.weimagepicker__item_image, parent, false), selectedBucket, selectListener);
+            return new ImageViewHolder(inflater.inflate(R.layout.weimagepicker__item_image, parent, false), clickable, selectedBucket, selectListener);
         }
     }
 

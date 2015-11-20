@@ -107,6 +107,10 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         super.onSaveInstanceState(outState);
     }
 
+    private void hideBar() {
+
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         d("onCreateLoader:" + id);
@@ -116,12 +120,20 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         d("onLoadFinished:" + loader.getId());
-        ImageAdapter adapter = new ImageAdapter(this, data, mSelectedBucket, false, new OnImageSelectListener() {
+        final Bucket bucket = mBuckets.get(loader.getId());
+        ImageAdapter adapter = new ImageAdapter(this, data, mSelectedBucket, true, false, new OnImageSelectListener() {
             @Override
-            public void onImageSelected(long imageId) {
+            public void onImageSelected(long imageId, int position) {
                 d("onImageSelected:" + imageId);
                 supportInvalidateOptionsMenu();
             }
+
+            @Override
+            public void onImageClick(long imageId, int position) {
+                d("onImageClick");
+                startActivity(ImagePreviewActivity.createIntentForBucket(ImagePickerActivity.this, bucket, mSelectedBucket, position));
+            }
+
         });
         mRecyclerView.setAdapter(adapter);
     }

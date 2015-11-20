@@ -14,7 +14,7 @@ public class AllImageBucket extends Bucket {
     private final static String KEY_FIRST_IMAGE_ID = KEY_BUCKET + ";KEY_FIRST_IMAGE_ID";
 
 
-    private AllImageBucket() {
+    AllImageBucket() {
     }
 
     public AllImageBucket(String name, int count, long firstImageId) {

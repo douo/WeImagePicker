@@ -23,7 +23,7 @@ public class SubBucket extends Bucket {
     private long firstImageId;
     private int count;
 
-    private SubBucket() {
+    SubBucket() {
     }
 
     public SubBucket(long id, String name, long firstImageId) {
