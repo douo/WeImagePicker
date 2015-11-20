@@ -70,6 +70,7 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
             currentTask.cancel();
         }
         long origId = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media._ID));
+        image.setImageResource(R.drawable.weimagepicker__empty_image);
         LruThumbnail thumbnail = new LruThumbnail(resolver, origId);
         currentTask = new LruImageTask(context, thumbnail, new LruImageTask.OnCompleteListener() {
             @Override

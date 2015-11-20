@@ -39,6 +39,8 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     ImageContentManager mManager;
     List<Bucket> mBuckets;
     SelectedBucket mSelectedBucket;
+    Bucket currentBucket;
+    ImageAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +71,20 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
                                         }
         );
         mRecyclerView.setLayoutManager(layoutManager);
+        mAdapter = new ImageAdapter(this, null, mSelectedBucket, true, false, new OnImageSelectListener() {
+            @Override
+            public void onImageSelected(long imageId, int position) {
+                d("onImageSelected:" + imageId);
+                supportInvalidateOptionsMenu();
+            }
 
+            @Override
+            public void onImageClick(long imageId, int position) {
+                d("onImageClick");
+                startActivity(ImagePreviewActivity.createIntentForBucket(ImagePickerActivity.this, currentBucket, mSelectedBucket, position));
+            }
+        });
+        mRecyclerView.setAdapter(mAdapter);
         View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.weimagepicker__toolbar_spinner,
                 toolbar, false);
         ActionBar.LayoutParams lp = new ActionBar.LayoutParams(
@@ -79,7 +94,8 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         mBucketSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println("onItemSelected:" + position);
+                d("onItemSelected:" + position);
+                currentBucket = mBuckets.get(position);
                 getSupportLoaderManager().initLoader(position, null, ImagePickerActivity.this);
             }
 
@@ -107,10 +123,6 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         super.onSaveInstanceState(outState);
     }
 
-    private void hideBar() {
-
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         d("onCreateLoader:" + id);
@@ -120,27 +132,13 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         d("onLoadFinished:" + loader.getId());
-        final Bucket bucket = mBuckets.get(loader.getId());
-        ImageAdapter adapter = new ImageAdapter(this, data, mSelectedBucket, true, false, new OnImageSelectListener() {
-            @Override
-            public void onImageSelected(long imageId, int position) {
-                d("onImageSelected:" + imageId);
-                supportInvalidateOptionsMenu();
-            }
-
-            @Override
-            public void onImageClick(long imageId, int position) {
-                d("onImageClick");
-                startActivity(ImagePreviewActivity.createIntentForBucket(ImagePickerActivity.this, bucket, mSelectedBucket, position));
-            }
-
-        });
-        mRecyclerView.setAdapter(adapter);
+        mAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         d("onLoaderReset:" + loader.getId());
+        mAdapter.swapCursor(null);
     }
 
     private void d(String text) {
