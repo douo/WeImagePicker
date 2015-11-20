@@ -28,7 +28,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:background="@null"
-        android:padding="2dp"
+        android:padding="4dp"
         android:src="@drawable/weimagepicker__check_box_white_24dp"/>
 
 </RelativeLayout>

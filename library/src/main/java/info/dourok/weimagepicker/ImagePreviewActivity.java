@@ -80,6 +80,7 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
                 break;
         }
         d(mBucket.getName());
+        setTitle((getIntent().getIntExtra(KEY_POSITION, 0) + 1) + "/" + mBucket.getCount());
         getSupportLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
