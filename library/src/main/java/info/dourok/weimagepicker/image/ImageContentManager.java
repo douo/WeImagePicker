@@ -12,6 +12,8 @@ import android.support.v4.content.Loader;
 import java.util.ArrayList;
 import java.util.List;
 
+import info.dourok.weimagepicker.R;
+
 /**
  * Created by John on 2015/11/16.
  */
@@ -93,7 +95,7 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
                 }
             } while (data.moveToNext());
         }
-        mAllImageBucket = new AllImageBucket("All Images", data.getCount(), firstImageId);
+        mAllImageBucket = new AllImageBucket(mContext.getString(R.string.weimagepicker__name_all_image), data.getCount(), firstImageId);
         data.close();
         mPrepareCallback.onPrepared();
     }

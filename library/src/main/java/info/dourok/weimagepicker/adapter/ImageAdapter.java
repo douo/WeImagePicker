@@ -36,9 +36,9 @@ public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> {
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         if (viewType == VIEW_TYPE_CAMERA) {
-            return new ImageViewHolder(inflater.inflate(R.layout.item_image, parent, false), selectedBucket, selectListener);
+            return new ImageViewHolder(inflater.inflate(R.layout.weimagepicker__item_image, parent, false), selectedBucket, selectListener);
         } else {
-            return new ImageViewHolder(inflater.inflate(R.layout.item_image, parent, false), selectedBucket, selectListener);
+            return new ImageViewHolder(inflater.inflate(R.layout.weimagepicker__item_image, parent, false), selectedBucket, selectListener);
         }
     }
 

@@ -56,7 +56,7 @@ public class BucketAdapter extends BaseAdapter {
         ViewHolder holder;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
-            convertView = inflater.inflate(R.layout.item_bucket, parent, false);
+            convertView = inflater.inflate(R.layout.weimagepicker__item_bucket, parent, false);
             holder = new ViewHolder();
             holder.image = (ImageView) convertView.findViewById(R.id.image);
             holder.name = (TextView) convertView.findViewById(R.id.name);
@@ -79,7 +79,7 @@ public class BucketAdapter extends BaseAdapter {
         if (convertView == null || !convertView.getTag().toString().equals("NON_DROPDOWN")) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
             convertView = inflater.inflate(R.layout.
-                    item_bucket_spinner, parent, false);
+                    weimagepicker__item_bucket_spinner, parent, false);
             convertView.setTag("NON_DROPDOWN");
         }
         TextView textView = (TextView) convertView.findViewById(android.R.id.text1);

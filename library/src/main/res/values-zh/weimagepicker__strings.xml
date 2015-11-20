@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="weimagepicker__app_name">WeImagePicker</string>
+    <string name="weimagepicker__title_activity_image_picker">ImagePickerActivity</string>
+    <string name="weimagepicker__action_done">好(%1$d)</string>
+    <string name="weimagepicker__action_done_limit">好(%1$d/%2$d)</string>
+    <string name="weimagepicker__name_all_image">所有图片</string>
+    <string name="weimagepicker__name_selected_image">已选</string>
+</resources>

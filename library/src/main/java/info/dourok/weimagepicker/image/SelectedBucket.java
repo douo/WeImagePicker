@@ -16,7 +16,12 @@ import java.util.List;
 public class SelectedBucket extends Bucket {
     private List<Long> selectedIds;
     private final static String KEY_BUCKET = "info.dourok.weimagepicker.image.SelectedBucket";
-
+    public final static String[] PROJECTION = new String[]{
+            MediaStore.Images.Media._ID,
+            MediaStore.Images.Media.DATE_ADDED,
+            MediaStore.Images.Media.DISPLAY_NAME,
+            MediaStore.Images.Media.DATA
+    };
 
     private SelectedBucket(List<Long> list) {
         selectedIds = list;
@@ -97,7 +102,7 @@ public class SelectedBucket extends Bucket {
             sb.append(id);
         }
         sb.append(")");
-        return new CursorLoader(context, ImageContentManager.URI, ImageContentManager.PROJECTION, sb.toString(), null, null);
+        return new CursorLoader(context, ImageContentManager.URI, PROJECTION, sb.toString(), null, null);
     }
 
     public long[] toArray() {

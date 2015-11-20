@@ -1,6 +1,1 @@
-<resources>
-    <string name="app_name">WeImagePicker</string>
-    <string name="title_activity_image_picker">ImagePickerActivity</string>
-    <string name="action_done">OK(%1$d)</string>
-    <string name="action_done_limit">OK(%1$d/%2$d)</string>
-</resources>
+<resources></resources>

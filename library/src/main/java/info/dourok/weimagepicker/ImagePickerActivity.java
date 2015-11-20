@@ -48,7 +48,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         } else {
             mSelectedBucket = new SelectedBucket();
         }
-        setContentView(R.layout.activity_image_picker);
+        setContentView(R.layout.weimagepicker__activity_image_picker);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -57,7 +57,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-                                            int space = getResources().getDimensionPixelSize(R.dimen.grid_item_margin);
+                                            int space = getResources().getDimensionPixelSize(R.dimen.weimagepicker__grid_item_margin);
 
                                             @Override
                                             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -70,7 +70,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         );
         mRecyclerView.setLayoutManager(layoutManager);
 
-        View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner,
+        View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.weimagepicker__toolbar_spinner,
                 toolbar, false);
         ActionBar.LayoutParams lp = new ActionBar.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -137,7 +137,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_image_picker, menu);
+        getMenuInflater().inflate(R.menu.weimagepicker__menu_image_picker, menu);
         return true;
     }
 
@@ -147,7 +147,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         int count = mSelectedBucket.getCount();
         if (count > 0) {
             item.setVisible(true);
-            item.setTitle(getString(R.string.action_done, count));
+            item.setTitle(getString(R.string.weimagepicker__action_done, count));
         } else {
             item.setVisible(false);
         }
