@@ -44,8 +44,10 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     DefaultImageCallback mImageCallback;
 
     public final static String KEY_SHOW_CAMERA_BUTTON = "info.dourok.weimagepicker:KEY_SHOW_CAMERA_BUTTON";
+    public final static String KEY_MAX_IMAGE_COUNT = "info.dourok.weimagepicker:KEY_MAX_IMAGE";
 
-    protected boolean showCameraButton;
+    private boolean showCameraButton;
+    private int maxImageCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
             mSelectedBucket = new SelectedBucket();
         }
         showCameraButton = getIntent().getBooleanExtra(KEY_SHOW_CAMERA_BUTTON, false);
+        maxImageCount = getIntent().getIntExtra(KEY_MAX_IMAGE_COUNT, 0);
         setContentView(R.layout.weimagepicker__activity_image_picker);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -77,7 +80,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
                                         }
         );
         mRecyclerView.setLayoutManager(layoutManager);
-        mImageCallback = new DefaultImageCallback(this, mSelectedBucket) {
+        mImageCallback = new DefaultImageCallback(this, mSelectedBucket, maxImageCount) {
             @Override
             public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
                 super.onImageSelect(holder, imageId, position);
@@ -130,8 +133,16 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         super.onSaveInstanceState(outState);
     }
 
-    private boolean isShowCameraButton() {
+    protected boolean isShowCameraButton() {
         return showCameraButton;
+    }
+
+    protected int getMaxImageCount() {
+        return maxImageCount;
+    }
+
+    protected final boolean hasMaxLimit() {
+        return getMaxImageCount() > 0;
     }
 
     @Override
@@ -173,7 +184,11 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         int count = mSelectedBucket.getCount();
         if (count > 0) {
             item.setVisible(true);
-            item.setTitle(getString(R.string.weimagepicker__action_done, count));
+            if (hasMaxLimit()) {
+                item.setTitle(getString(R.string.weimagepicker__action_done_limit, count, maxImageCount));
+            } else {
+                item.setTitle(getString(R.string.weimagepicker__action_done, count));
+            }
         } else {
             item.setVisible(false);
         }

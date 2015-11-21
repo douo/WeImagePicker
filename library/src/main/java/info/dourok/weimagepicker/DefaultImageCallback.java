@@ -25,11 +25,13 @@ public abstract class DefaultImageCallback implements OnImageCallback {
     Activity mContext;
     SelectedBucket mSelectedBucket;
     Bucket currentBucket;
+    private int maxImageCount;
 
-    public DefaultImageCallback(Activity context, SelectedBucket selectedBucket) {
+    public DefaultImageCallback(Activity context, SelectedBucket selectedBucket, int maxImageCount) {
         mContext = context;
         mSelectedBucket = selectedBucket;
         currentBucket = selectedBucket;
+        this.maxImageCount = maxImageCount;
     }
 
     public void setCurrentBucket(Bucket currentBucket) {
@@ -43,8 +45,15 @@ public abstract class DefaultImageCallback implements OnImageCallback {
 
     @Override
     public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
-        boolean selected = mSelectedBucket.toggle(imageId);
-        holder.setSelected(selected);
+        if (maxImageCount <= 0 || mSelectedBucket.getCount() < maxImageCount) {
+            boolean selected = mSelectedBucket.toggle(imageId);
+            holder.setSelected(selected);
+        } else {
+            if (mSelectedBucket.isSelected(imageId)) {
+                mSelectedBucket.unselect(imageId);
+                holder.setSelected(false);
+            }
+        }
     }
 
     @Override
