@@ -15,7 +15,6 @@ import info.dourok.lruimage.LruImage;
 import info.dourok.lruimage.LruImageException;
 import info.dourok.lruimage.LruImageTask;
 import info.dourok.weimagepicker.R;
-import info.dourok.weimagepicker.image.SelectedBucket;
 
 /**
  * Created by John on 2015/11/16.
@@ -25,13 +24,11 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
     ImageView image;
     View mask;
     LruImageTask currentTask;
-    SelectedBucket bucket;
-    private OnImageSelectListener selectListener;
+    private OnImageCallback callback;
 
-    public ImageViewHolder(View itemView, boolean clickable, SelectedBucket bucket, OnImageSelectListener listener) {
+    public ImageViewHolder(View itemView, OnImageCallback listener) {
         super(itemView);
-        this.bucket = bucket;
-        selectListener = listener;
+        callback = listener;
         selector = (ImageButton) itemView.findViewById(R.id.selector);
         image = (ImageView) itemView.findViewById(R.id.image);
         mask = itemView.findViewById(R.id.mask);
@@ -39,33 +36,30 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 long id = (long) selector.getTag();
-                boolean selected = ImageViewHolder.this.bucket.toggle(id);
-                selector.setSelected(selected);
-                if (selected) {
-                    mask.setVisibility(View.VISIBLE);
-                } else {
-                    mask.setVisibility(View.INVISIBLE);
-                }
-                selectListener.onImageSelected(id, getAdapterPosition());
+                callback.onImageSelect(ImageViewHolder.this, id, getAdapterPosition());
             }
         };
         selector.setOnClickListener(onSelect);
-        if (clickable) {
-            View.OnClickListener onClick = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    long id = (long) selector.getTag();
-                    selectListener.onImageClick(id, getAdapterPosition());
-                }
-            };
-            itemView.setOnClickListener(onClick);
+        View.OnClickListener onClick = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long id = (long) selector.getTag();
+                callback.onImageClick(ImageViewHolder.this, id, getAdapterPosition());
+            }
+        };
+        itemView.setOnClickListener(onClick);
+    }
+
+    public void setSelected(boolean selected) {
+        selector.setSelected(selected);
+        if (selected) {
+            mask.setVisibility(View.VISIBLE);
         } else {
-            itemView.setOnClickListener(onSelect);
+            mask.setVisibility(View.INVISIBLE);
         }
     }
 
-
-    public void populate(Context context, ContentResolver resolver, Cursor cursor, SelectedBucket bucket) {
+    public void populate(Context context, ContentResolver resolver, Cursor cursor) {
         if (currentTask != null) {
             currentTask.cancel();
         }
@@ -88,15 +82,10 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
                 d("cancel:" + getAdapterPosition());
             }
         }).execute();
-        boolean selected = bucket.isSelected(origId);
+        boolean selected = callback.isSelected(this, origId);
         itemView.setTag(origId);
         selector.setTag(origId);
-        selector.setSelected(selected);
-        if (selected) {
-            mask.setVisibility(View.VISIBLE);
-        } else {
-            mask.setVisibility(View.INVISIBLE);
-        }
+        setSelected(selected);
     }
 
 

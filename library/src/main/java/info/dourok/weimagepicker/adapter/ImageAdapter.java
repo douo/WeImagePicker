@@ -6,31 +6,26 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import info.dourok.weimagepicker.R;
-import info.dourok.weimagepicker.image.SelectedBucket;
 
 /**
  * Created by John on 2015/11/16.
  */
-public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> {
+public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> implements OnImageCallback {
     private static final int VIEW_TYPE_CAMERA = 0x1;
     private static final int VIEW_TYPE_IMAGE = 0x2;
     private boolean supportCamera;
-    private SelectedBucket selectedBucket;
-    private OnImageSelectListener selectListener;
-    private boolean clickable;
+    private OnImageCallback callback;
 
-    public ImageAdapter(Context context, Cursor cursor, SelectedBucket selectedBucket, boolean clickable, boolean supprotCamera, OnImageSelectListener listener) {
+    public ImageAdapter(Context context, Cursor cursor, boolean supportCamera, OnImageCallback listener) {
         super(context, cursor);
-        this.supportCamera = supprotCamera;
-        this.clickable = clickable;
-        this.selectedBucket = selectedBucket;
-        this.selectListener = listener;
+        this.supportCamera = supportCamera;
+        this.callback = listener;
     }
 
 
     @Override
     public void onBindViewHolder(ImageViewHolder viewHolder, Cursor cursor) {
-        viewHolder.populate(mContext, mContext.getContentResolver(), cursor, selectedBucket);
+        viewHolder.populate(mContext, mContext.getContentResolver(), cursor);
     }
 
 
@@ -38,9 +33,9 @@ public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> {
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         if (viewType == VIEW_TYPE_CAMERA) {
-            return new ImageViewHolder(inflater.inflate(R.layout.weimagepicker__item_image, parent, false), clickable, selectedBucket, selectListener);
+            return new ImageViewHolder(inflater.inflate(R.layout.weimagepicker__item_image, parent, false), this);
         } else {
-            return new ImageViewHolder(inflater.inflate(R.layout.weimagepicker__item_image, parent, false), clickable, selectedBucket, selectListener);
+            return new ImageViewHolder(inflater.inflate(R.layout.weimagepicker__item_image, parent, false), this);
         }
     }
 
@@ -78,5 +73,41 @@ public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> {
             return VIEW_TYPE_IMAGE;
         }
 
+    }
+
+    @Override
+    public void onTakePicture() {
+        callback.onTakePicture();
+    }
+
+    @Override
+    public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
+        if (supportCamera) {
+            if (position == 0) {
+                callback.onTakePicture();
+                return;
+            } else {
+                position--;
+            }
+        }
+        callback.onImageSelect(holder, imageId, position);
+    }
+
+    @Override
+    public void onImageClick(ImageViewHolder holder, long imageId, int position) {
+        if (supportCamera) {
+            if (position == 0) {
+                callback.onTakePicture();
+                return;
+            } else {
+                position--;
+            }
+        }
+        callback.onImageClick(holder, imageId, position);
+    }
+
+    @Override
+    public boolean isSelected(ImageViewHolder holder, long imageId) {
+        return callback.isSelected(holder, imageId);
     }
 }

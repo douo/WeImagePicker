@@ -27,8 +27,9 @@ import android.widget.Spinner;
 import java.util.List;
 
 import info.dourok.weimagepicker.adapter.BucketAdapter;
+import info.dourok.weimagepicker.adapter.DefaultImageCallback;
 import info.dourok.weimagepicker.adapter.ImageAdapter;
-import info.dourok.weimagepicker.adapter.OnImageSelectListener;
+import info.dourok.weimagepicker.adapter.ImageViewHolder;
 import info.dourok.weimagepicker.image.Bucket;
 import info.dourok.weimagepicker.image.ImageContentManager;
 import info.dourok.weimagepicker.image.SelectedBucket;
@@ -39,8 +40,8 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     ImageContentManager mManager;
     List<Bucket> mBuckets;
     SelectedBucket mSelectedBucket;
-    Bucket currentBucket;
     ImageAdapter mAdapter;
+    DefaultImageCallback mImageCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,19 +72,14 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
                                         }
         );
         mRecyclerView.setLayoutManager(layoutManager);
-        mAdapter = new ImageAdapter(this, null, mSelectedBucket, true, false, new OnImageSelectListener() {
+        mImageCallback = new DefaultImageCallback(this, mSelectedBucket) {
             @Override
-            public void onImageSelected(long imageId, int position) {
-                d("onImageSelected:" + imageId);
+            public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
+                super.onImageSelect(holder, imageId, position);
                 supportInvalidateOptionsMenu();
             }
-
-            @Override
-            public void onImageClick(long imageId, int position) {
-                d("onImageClick");
-                startActivity(ImagePreviewActivity.createIntentForBucket(ImagePickerActivity.this, currentBucket, mSelectedBucket, position));
-            }
-        });
+        };
+        mAdapter = new ImageAdapter(this, null, false, mImageCallback);
         mRecyclerView.setAdapter(mAdapter);
         View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.weimagepicker__toolbar_spinner,
                 toolbar, false);
@@ -95,7 +91,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 d("onItemSelected:" + position);
-                currentBucket = mBuckets.get(position);
+                mImageCallback.setCurrentBucket(mBuckets.get(position));
                 getSupportLoaderManager().initLoader(position, null, ImagePickerActivity.this);
             }
 
