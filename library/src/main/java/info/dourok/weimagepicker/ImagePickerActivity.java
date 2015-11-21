@@ -43,6 +43,10 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     ImageAdapter mAdapter;
     DefaultImageCallback mImageCallback;
 
+    public final static String KEY_SHOW_CAMERA_BUTTON = "info.dourok.weimagepicker:KEY_SHOW_CAMERA_BUTTON";
+
+    protected boolean showCameraButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +55,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         } else {
             mSelectedBucket = new SelectedBucket();
         }
+        showCameraButton = getIntent().getBooleanExtra(KEY_SHOW_CAMERA_BUTTON, false);
         setContentView(R.layout.weimagepicker__activity_image_picker);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -85,7 +90,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
                 done(mSelectedBucket.toUriArray());
             }
         };
-        mAdapter = new ImageAdapter(this, null, true, mImageCallback);
+        mAdapter = new ImageAdapter(this, null, isShowCameraButton(), mImageCallback);
         mRecyclerView.setAdapter(mAdapter);
         View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.weimagepicker__toolbar_spinner,
                 toolbar, false);
@@ -125,6 +130,10 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         super.onSaveInstanceState(outState);
     }
 
+    private boolean isShowCameraButton() {
+        return showCameraButton;
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         d("onCreateLoader:" + id);
@@ -135,7 +144,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         d("onLoadFinished:" + loader.getId());
         if (loader.getId() == 0) {
-            mAdapter.setShowCameraButton(true);
+            mAdapter.setShowCameraButton(isShowCameraButton());
         } else {
             mAdapter.setShowCameraButton(false);
         }
