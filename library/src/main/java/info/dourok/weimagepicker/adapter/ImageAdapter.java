@@ -13,13 +13,21 @@ import info.dourok.weimagepicker.R;
 public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> implements OnImageCallback {
     private static final int VIEW_TYPE_CAMERA = 0x1;
     private static final int VIEW_TYPE_IMAGE = 0x2;
-    private boolean supportCamera;
+    private boolean showCameraButton;
     private OnImageCallback callback;
 
-    public ImageAdapter(Context context, Cursor cursor, boolean supportCamera, OnImageCallback listener) {
+    public ImageAdapter(Context context, Cursor cursor, boolean showCameraButton, OnImageCallback listener) {
         super(context, cursor);
-        this.supportCamera = supportCamera;
+        this.showCameraButton = showCameraButton;
         this.callback = listener;
+    }
+
+
+    public void setShowCameraButton(boolean bool) {
+        if (showCameraButton != bool) {
+            showCameraButton = bool;
+            notifyDataSetChanged();
+        }
     }
 
 
@@ -42,9 +50,9 @@ public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> imp
 
     @Override
     public void onBindViewHolder(ImageViewHolder viewHolder, int position) {
-        if (supportCamera) {
+        if (showCameraButton) {
             if (position == 0) {
-
+                viewHolder.populateCamera();
             } else {
                 position--;
                 super.onBindViewHolder(viewHolder, position);
@@ -58,7 +66,7 @@ public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> imp
 
     @Override
     public int getItemCount() {
-        if (supportCamera) {
+        if (showCameraButton) {
             return super.getItemCount() + 1;
         } else {
             return super.getItemCount();
@@ -67,7 +75,7 @@ public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> imp
 
     @Override
     public int getItemViewType(int position) {
-        if (supportCamera && position == 0) {
+        if (showCameraButton && position == 0) {
             return VIEW_TYPE_CAMERA;
         } else {
             return VIEW_TYPE_IMAGE;
@@ -82,7 +90,7 @@ public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> imp
 
     @Override
     public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
-        if (supportCamera) {
+        if (showCameraButton) {
             if (position == 0) {
                 callback.onTakePicture();
                 return;
@@ -95,7 +103,7 @@ public class ImageAdapter extends CursorRecyclerViewAdapter<ImageViewHolder> imp
 
     @Override
     public void onImageClick(ImageViewHolder holder, long imageId, int position) {
-        if (supportCamera) {
+        if (showCameraButton) {
             if (position == 0) {
                 callback.onTakePicture();
                 return;

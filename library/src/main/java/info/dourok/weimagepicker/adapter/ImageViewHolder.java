@@ -43,8 +43,13 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
         View.OnClickListener onClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                long id = (long) selector.getTag();
-                callback.onImageClick(ImageViewHolder.this, id, getAdapterPosition());
+                Object obj = selector.getTag();
+                if (obj == null) {
+                    callback.onTakePicture();
+                } else {
+                    long id = (long) obj;
+                    callback.onImageClick(ImageViewHolder.this, id, getAdapterPosition());
+                }
             }
         };
         itemView.setOnClickListener(onClick);
@@ -57,6 +62,13 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
         } else {
             mask.setVisibility(View.INVISIBLE);
         }
+    }
+
+    public void populateCamera() {
+        selector.setVisibility(View.GONE);
+        image.setScaleType(ImageView.ScaleType.CENTER);
+        image.setBackgroundColor(0x33000000);
+        image.setImageResource(R.drawable.ic_camera_large);
     }
 
     public void populate(Context context, ContentResolver resolver, Cursor cursor) {

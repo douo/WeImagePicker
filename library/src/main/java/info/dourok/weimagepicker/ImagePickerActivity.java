@@ -1,6 +1,7 @@
 package info.dourok.weimagepicker;
 
 import android.content.ClipData;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Rect;
@@ -27,7 +28,6 @@ import android.widget.Spinner;
 import java.util.List;
 
 import info.dourok.weimagepicker.adapter.BucketAdapter;
-import info.dourok.weimagepicker.adapter.DefaultImageCallback;
 import info.dourok.weimagepicker.adapter.ImageAdapter;
 import info.dourok.weimagepicker.adapter.ImageViewHolder;
 import info.dourok.weimagepicker.image.Bucket;
@@ -78,8 +78,14 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
                 super.onImageSelect(holder, imageId, position);
                 supportInvalidateOptionsMenu();
             }
+
+            @Override
+            public void onCameraPhotoSaved(Uri uri) {
+                mSelectedBucket.add(ContentUris.parseId(uri));
+                done(mSelectedBucket.toUriArray());
+            }
         };
-        mAdapter = new ImageAdapter(this, null, false, mImageCallback);
+        mAdapter = new ImageAdapter(this, null, true, mImageCallback);
         mRecyclerView.setAdapter(mAdapter);
         View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.weimagepicker__toolbar_spinner,
                 toolbar, false);
@@ -128,6 +134,11 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         d("onLoadFinished:" + loader.getId());
+        if (loader.getId() == 0) {
+            mAdapter.setShowCameraButton(true);
+        } else {
+            mAdapter.setShowCameraButton(false);
+        }
         mAdapter.swapCursor(data);
     }
 
@@ -168,6 +179,11 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mImageCallback.handleCameraResult(requestCode, resultCode, data);
     }
 
     protected void done(@NonNull Uri[] uris) {
