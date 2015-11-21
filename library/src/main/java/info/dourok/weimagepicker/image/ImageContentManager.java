@@ -25,7 +25,7 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
             MediaStore.Images.Media.DATE_ADDED,
             MediaStore.Images.Media.DISPLAY_NAME,
     };
-    public final static String ORDER = MediaStore.Images.Media.DATE_ADDED;
+    public final static String ORDER = MediaStore.Images.Media.DATE_ADDED + " DESC";
 
     private final static String[] BUCKET_PROJECTION = new String[]{
             MediaStore.Images.Media._ID,
