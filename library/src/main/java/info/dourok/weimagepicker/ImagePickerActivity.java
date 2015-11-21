@@ -80,7 +80,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
                                         }
         );
         mRecyclerView.setLayoutManager(layoutManager);
-        mImageCallback = new DefaultImageCallback(this, mSelectedBucket, maxImageCount) {
+        mImageCallback = new DefaultImageCallback(this, mSelectedBucket, getMaxImageCount()) {
             @Override
             public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
                 super.onImageSelect(holder, imageId, position);
@@ -185,7 +185,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         if (count > 0) {
             item.setVisible(true);
             if (hasMaxLimit()) {
-                item.setTitle(getString(R.string.weimagepicker__action_done_limit, count, maxImageCount));
+                item.setTitle(getString(R.string.weimagepicker__action_done_limit, count, getMaxImageCount()));
             } else {
                 item.setTitle(getString(R.string.weimagepicker__action_done, count));
             }
