@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClick(View view) {
         Intent i = new Intent(this, ImagePickerActivity.class);
+        i.putExtra(ImagePickerActivity.KEY_MAX_IMAGE_COUNT, 1);
+        i.putExtra(ImagePickerActivity.KEY_SHOW_CAMERA_BUTTON, true);
         startActivityForResult(i, REQUEST_PICK);
     }
 
