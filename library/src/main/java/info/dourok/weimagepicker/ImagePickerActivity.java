@@ -92,6 +92,11 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
                 mSelectedBucket.add(ContentUris.parseId(uri));
                 done(mSelectedBucket.toUriArray());
             }
+
+            @Override
+            public void onSelectedBucketUpdated(SelectedBucket selectedBucket) {
+                mAdapter.notifyDataSetChanged();
+            }
         };
         mAdapter = new ImageAdapter(this, null, isShowCameraButton(), mImageCallback);
         mRecyclerView.setAdapter(mAdapter);
@@ -207,7 +212,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mImageCallback.handleCameraResult(requestCode, resultCode, data);
+        mImageCallback.handleActivityResult(requestCode, resultCode, data);
     }
 
     protected void done(@NonNull Uri[] uris) {

@@ -4,7 +4,6 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
@@ -28,10 +27,13 @@ import info.dourok.weimagepicker.image.SelectedBucket;
 import info.dourok.weimagepicker.image.SubBucket;
 
 public class ImagePreviewActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final String KEY_MODIFIED = "KEY_MODIFIED";
     Bucket mBucket;
     SelectedBucket mSelectedBucket;
     ViewPager mPager;
-
+    View mBottomBar;
+    View mSelectorText;
+    View mSelector;
     public static final String KEY_BUCKET_TYPE = "KEY_BUCKET_TYPE";
     public static final String KEY_POSITION = "KEY_POSITION";
 
@@ -40,14 +42,30 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
     public static final int BUCKET_TYPE_ALL = BUCKET_TYPE_SELECTED + 1;
 
     private final static int LOADER_ID = 0x12;
+    private boolean modified;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.weimagepicker__activity_image_preview);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mBottomBar = findViewById(R.id.bottom_bar);
+        mSelector = findViewById(R.id.selector);
+        mSelectorText = findViewById(R.id.selector_text);
+        View.OnClickListener selectListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                modified = true;
+                boolean selected = mSelectedBucket.toggle(mAdapter.getId(mPager.getCurrentItem()));
+                mSelector.setSelected(selected);
+            }
+        };
+        mSelector.setOnClickListener(selectListener);
+        mSelectorText.setOnClickListener(selectListener);
+
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -58,6 +76,7 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
             @Override
             public void onPageSelected(int position) {
                 setTitle((position + 1) + "/" + mBucket.getCount());
+                checkSelected(position);
             }
 
             @Override
@@ -66,7 +85,12 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
             }
         });
 
-        mSelectedBucket = Bucket.fromIntent(getIntent(), SelectedBucket.class);
+        if (savedInstanceState != null) {
+            modified = savedInstanceState.getBoolean(KEY_MODIFIED);
+            mSelectedBucket = Bucket.fromBundle(savedInstanceState, SelectedBucket.class);
+        } else {
+            mSelectedBucket = Bucket.fromIntent(getIntent(), SelectedBucket.class);
+        }
         int bucketType = getIntent().getIntExtra(KEY_BUCKET_TYPE, BUCKET_TYPE_SELECTED);
         switch (bucketType) {
             case BUCKET_TYPE_ALL:
@@ -80,9 +104,31 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
                 break;
         }
         d(mBucket.getName());
-        setTitle((getIntent().getIntExtra(KEY_POSITION, 0) + 1) + "/" + mBucket.getCount());
         getSupportLoaderManager().initLoader(LOADER_ID, null, this);
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(KEY_MODIFIED, modified);
+        mSelectedBucket.putIntoBundle(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+    private void checkSelected(int position) {
+        mSelector.setSelected(mSelectedBucket.isSelected(mAdapter.getId(position)));
+    }
+
+    @Override
+    public void finish() {
+        if (modified) {
+            Intent data = new Intent();
+            mSelectedBucket.putIntoIntent(data);
+            setResult(RESULT_OK, data);
+        }
+        super.finish();
+    }
+
+    ImagePagerAdapter mAdapter;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -91,9 +137,12 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        ImagePagerAdapter adapter = new ImagePagerAdapter(data);
-        mPager.setAdapter(adapter);
-        mPager.setCurrentItem(getIntent().getIntExtra(KEY_POSITION, 0));
+        mAdapter = new ImagePagerAdapter(data);
+        mPager.setAdapter(mAdapter);
+        int position = getIntent().getIntExtra(KEY_POSITION, 0);
+        setTitle((position + 1) + "/" + mBucket.getCount());
+        mPager.setCurrentItem(position);
+        checkSelected(position);
     }
 
     @Override
@@ -103,10 +152,12 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
 
 
     private class ImagePagerAdapter extends PagerAdapter {
+        long[] idsArray;
         Cursor mCursor;
 
         public ImagePagerAdapter(Cursor cursor) {
             this.mCursor = cursor;
+            idsArray = new long[cursor.getCount()];
         }
 
         @Override
@@ -114,18 +165,23 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
             return mBucket.getCount();
         }
 
+
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             d("instantiateItem:" + position);
             SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) getLayoutInflater().
                     inflate(R.layout.weimagepicker__item_pager_image, container, false);
             mCursor.moveToPosition(position);
-            DatabaseUtils.dumpCurrentRow(mCursor, System.out);
+            //DatabaseUtils.dumpCurrentRow(mCursor, System.out);
             long id = mCursor.getLong(mCursor.getColumnIndex(MediaStore.Images.Media._ID));
-            imageView.setTag(id);
+            idsArray[position] = id;
             imageView.setImage(ImageSource.uri(ContentUris.withAppendedId(ImageContentManager.URI, id)));
             container.addView(imageView);
             return imageView;
+        }
+
+        public long getId(int position) {
+            return idsArray[position];
         }
 
         @Override

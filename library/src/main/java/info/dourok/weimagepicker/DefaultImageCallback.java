@@ -21,6 +21,7 @@ import info.dourok.weimagepicker.image.SelectedBucket;
  */
 public abstract class DefaultImageCallback implements OnImageCallback {
     private static final int REQUEST_TAKE_PHOTO = 0x12;
+    private static final int REQUEST_PREVIEW = 0x13;
     private static final String TAG = "DefaultImageCallback";
     Activity mContext;
     SelectedBucket mSelectedBucket;
@@ -58,7 +59,7 @@ public abstract class DefaultImageCallback implements OnImageCallback {
 
     @Override
     public void onImageClick(ImageViewHolder holder, long imageId, int position) {
-        mContext.startActivity(ImagePreviewActivity.createIntentForBucket(mContext, currentBucket, mSelectedBucket, position));
+        mContext.startActivityForResult(ImagePreviewActivity.createIntentForBucket(mContext, currentBucket, mSelectedBucket, position), REQUEST_PREVIEW);
     }
 
     @Override
@@ -85,6 +86,26 @@ public abstract class DefaultImageCallback implements OnImageCallback {
     }
 
     public abstract void onCameraPhotoSaved(Uri uri);
+
+    public abstract void onSelectedBucketUpdated(SelectedBucket selectedBucket);
+
+    public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
+        if (handleCameraResult(requestCode, resultCode, data)) {
+            return true;
+        } else {
+            return handlePreviewResult(requestCode, resultCode, data);
+        }
+    }
+
+    private boolean handlePreviewResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_PREVIEW && resultCode == Activity.RESULT_OK) {
+            mSelectedBucket.readFromIntent(data);
+            onSelectedBucketUpdated(mSelectedBucket);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public boolean handleCameraResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
