@@ -1,5 +1,6 @@
 package info.dourok.weimagepicker;
 
+import android.animation.Animator;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -43,12 +44,15 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
 
     private final static int LOADER_ID = 0x12;
     private boolean modified;
+    View mDecorView;
+    private boolean mDecorVisible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mDecorVisible = true;
         setContentView(R.layout.weimagepicker__activity_image_preview);
+        mDecorView = getWindow().getDecorView();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -118,6 +122,66 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
         mSelector.setSelected(mSelectedBucket.isSelected(mAdapter.getId(position)));
     }
 
+    // This snippet hides the system bars.
+    private void hideSystemUI() {
+        // Set the IMMERSIVE flag.
+        // Set the content to appear under the system bars so that the content
+        // doesn't resize when the system bars hide and show.
+//        mDecorView.setSystemUiVisibility(
+//                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+//                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+//                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+        getSupportActionBar().hide();
+        mBottomBar.animate().alpha(0).setListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mBottomBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        }).start();
+        mDecorVisible = false;
+    }
+
+    // This snippet shows the system bars. It does this by removing all the flags
+// except for the ones that make the content appear under the system bars.
+    private void showSystemUI() {
+//        mDecorView.setSystemUiVisibility(
+//                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
+        getSupportActionBar().show();
+
+        mDecorVisible = true;
+        mBottomBar.setVisibility(View.VISIBLE);
+        mBottomBar.setAlpha(1);
+    }
+
+    private void toggleSystemUI() {
+        if (mDecorVisible) {
+            hideSystemUI();
+        } else {
+            showSystemUI();
+        }
+    }
+
     @Override
     public void finish() {
         if (modified) {
@@ -176,6 +240,12 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
             long id = mCursor.getLong(mCursor.getColumnIndex(MediaStore.Images.Media._ID));
             idsArray[position] = id;
             imageView.setImage(ImageSource.uri(ContentUris.withAppendedId(ImageContentManager.URI, id)));
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleSystemUI();
+                }
+            });
             container.addView(imageView);
             return imageView;
         }
