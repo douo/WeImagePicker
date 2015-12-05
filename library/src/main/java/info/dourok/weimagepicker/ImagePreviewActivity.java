@@ -168,7 +168,6 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
 //                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         getSupportActionBar().show();
-
         mDecorVisible = true;
         mBottomBar.setVisibility(View.VISIBLE);
         mBottomBar.setAlpha(1);

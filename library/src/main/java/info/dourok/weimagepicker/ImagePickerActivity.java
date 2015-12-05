@@ -44,10 +44,11 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     DefaultImageCallback mImageCallback;
 
     public final static String KEY_SHOW_CAMERA_BUTTON = "info.dourok.weimagepicker:KEY_SHOW_CAMERA_BUTTON";
-    public final static String KEY_MAX_IMAGE_COUNT = "info.dourok.weimagepicker:KEY_MAX_IMAGE";
+    public final static String KEY_SELECTED_IMAGE_LIMIT = "info.dourok.weimagepicker:KEY_MAX_IMAGE";
+
 
     private boolean showCameraButton;
-    private int maxImageCount;
+    private int selectedImageLimit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
             mSelectedBucket = new SelectedBucket();
         }
         showCameraButton = getIntent().getBooleanExtra(KEY_SHOW_CAMERA_BUTTON, false);
-        maxImageCount = getIntent().getIntExtra(KEY_MAX_IMAGE_COUNT, 0);
+        selectedImageLimit = getIntent().getIntExtra(KEY_SELECTED_IMAGE_LIMIT, 0);
         setContentView(R.layout.weimagepicker__activity_image_picker);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -80,7 +81,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
                                         }
         );
         mRecyclerView.setLayoutManager(layoutManager);
-        mImageCallback = new DefaultImageCallback(this, mSelectedBucket, getMaxImageCount()) {
+        mImageCallback = new DefaultImageCallback(this, mSelectedBucket, getSelectedImageLimit()) {
             @Override
             public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
                 super.onImageSelect(holder, imageId, position);
@@ -138,16 +139,22 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * @return 是否显示调用相机按钮
+     */
     protected boolean isShowCameraButton() {
         return showCameraButton;
     }
 
-    protected int getMaxImageCount() {
-        return maxImageCount;
+    /**
+     * @return 大于 0 表示最多可选择的最大图片张数，小于等于关于零表示无限制图片张数
+     */
+    protected int getSelectedImageLimit() {
+        return selectedImageLimit;
     }
 
     protected final boolean hasMaxLimit() {
-        return getMaxImageCount() > 0;
+        return getSelectedImageLimit() > 0;
     }
 
     @Override
@@ -190,7 +197,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         if (count > 0) {
             item.setVisible(true);
             if (hasMaxLimit()) {
-                item.setTitle(getString(R.string.weimagepicker__action_done_limit, count, getMaxImageCount()));
+                item.setTitle(getString(R.string.weimagepicker__action_done_limit, count, getSelectedImageLimit()));
             } else {
                 item.setTitle(getString(R.string.weimagepicker__action_done, count));
             }
