@@ -21,7 +21,7 @@ import android.view.ViewGroup;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
-import info.dourok.weimagepicker.image.AllImageBucket;
+import info.dourok.weimagepicker.image.DeviceImageBucket;
 import info.dourok.weimagepicker.image.Bucket;
 import info.dourok.weimagepicker.image.ImageContentManager;
 import info.dourok.weimagepicker.image.SelectedBucket;
@@ -40,7 +40,7 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
 
     public static final int BUCKET_TYPE_SUB = 0x1;
     public static final int BUCKET_TYPE_SELECTED = BUCKET_TYPE_SUB + 1;
-    public static final int BUCKET_TYPE_ALL = BUCKET_TYPE_SELECTED + 1;
+    public static final int BUCKET_TYPE_DEVICE = BUCKET_TYPE_SELECTED + 1;
 
     private final static int LOADER_ID = 0x12;
     private boolean modified;
@@ -97,8 +97,8 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
         }
         int bucketType = getIntent().getIntExtra(KEY_BUCKET_TYPE, BUCKET_TYPE_SELECTED);
         switch (bucketType) {
-            case BUCKET_TYPE_ALL:
-                mBucket = Bucket.fromIntent(getIntent(), AllImageBucket.class);
+            case BUCKET_TYPE_DEVICE:
+                mBucket = Bucket.fromIntent(getIntent(), DeviceImageBucket.class);
                 break;
             case BUCKET_TYPE_SELECTED:
                 mBucket = Bucket.fromIntent(getIntent(), SelectedBucket.class);
@@ -297,9 +297,9 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
         return i;
     }
 
-    public static Intent createIntentForAllImageBucket(Context context, AllImageBucket bucket, SelectedBucket selectedBucket, int position) {
+    public static Intent createIntentForDeviceImageBucket(Context context, DeviceImageBucket bucket, SelectedBucket selectedBucket, int position) {
         Intent i = new Intent(context, ImagePreviewActivity.class);
-        i.putExtra(KEY_BUCKET_TYPE, BUCKET_TYPE_ALL);
+        i.putExtra(KEY_BUCKET_TYPE, BUCKET_TYPE_DEVICE);
         i.putExtra(KEY_POSITION, position);
         bucket.putIntoIntent(i);
         selectedBucket.putIntoIntent(i);
@@ -307,8 +307,8 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
     }
 
     public static Intent createIntentForBucket(Context context, Bucket bucket, SelectedBucket selectedBucket, int position) {
-        if (bucket instanceof AllImageBucket) {
-            return createIntentForAllImageBucket(context, (AllImageBucket) bucket, selectedBucket, position);
+        if (bucket instanceof DeviceImageBucket) {
+            return createIntentForDeviceImageBucket(context, (DeviceImageBucket) bucket, selectedBucket, position);
         } else if (bucket instanceof SubBucket) {
             return createIntentForSubBucket(context, (SubBucket) bucket, selectedBucket, position);
         } else if (bucket instanceof SelectedBucket) {

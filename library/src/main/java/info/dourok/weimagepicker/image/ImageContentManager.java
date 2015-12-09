@@ -36,7 +36,7 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
     private final static int BUCKET_LOADER_ID = 1234;
     private FragmentActivity mContext;
     private List<Bucket> mBucketList;
-    private Bucket mAllImageBucket;
+    private Bucket mDeviceImageBucket;
     private PrepareCallback mPrepareCallback;
 
 
@@ -96,18 +96,18 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
                 }
             } while (data.moveToNext());
         }
-        mAllImageBucket = new AllImageBucket(mContext.getString(R.string.weimagepicker__name_all_image), data.getCount(), firstImageId);
+        mDeviceImageBucket = new DeviceImageBucket(mContext.getString(R.string.weimagepicker__name_all_image), data.getCount(), firstImageId);
         data.close();
         mPrepareCallback.onPrepared();
     }
 
-    public Bucket getAllImageBucket() {
-        return mAllImageBucket;
+    public Bucket getDeviceImageBucket() {
+        return mDeviceImageBucket;
     }
 
     public List<Bucket> getAllBucketList() {
         List<Bucket> list = getSubBucketList();
-        list.add(0, getAllImageBucket());
+        list.add(0, getDeviceImageBucket());
         return list;
     }
 

@@ -4,20 +4,23 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 
-public class AllImageBucket extends Bucket {
+/**
+ * 处理设备上的所有图片
+ */
+public class DeviceImageBucket extends Bucket {
     private String name;
     private int count;
     private long firstImageId;
-    private final static String KEY_BUCKET = "info.dourok.weimagepicker.image.AllImageBucket";
+    private final static String KEY_BUCKET = "info.dourok.weimagepicker.image.DeviceImageBucket";
     private final static String KEY_NAME = KEY_BUCKET + ";KEY_NAME";
     private final static String KEY_COUNT = KEY_BUCKET + ";KEY_COUNT";
     private final static String KEY_FIRST_IMAGE_ID = KEY_BUCKET + ";KEY_FIRST_IMAGE_ID";
 
 
-    AllImageBucket() {
+    DeviceImageBucket() {
     }
 
-    public AllImageBucket(String name, int count, long firstImageId) {
+    public DeviceImageBucket(String name, int count, long firstImageId) {
         this.name = name;
         this.count = count;
         this.firstImageId = firstImageId;
