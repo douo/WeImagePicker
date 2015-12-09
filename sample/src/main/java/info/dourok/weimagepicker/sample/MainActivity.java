@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import info.dourok.weimagepicker.ImagePickerActivity;
+import info.dourok.weimagepicker.PickerBuilder;
 import info.dourok.weimagepicker.image.Bucket;
 import info.dourok.weimagepicker.image.SelectedBucket;
 
@@ -26,10 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onClick(View view) {
-        Intent i = new Intent(this, ImagePickerActivity.class);
-        i.putExtra(ImagePickerActivity.KEY_SELECTED_IMAGE_LIMIT, 1);
-        i.putExtra(ImagePickerActivity.KEY_SHOW_CAMERA_BUTTON, true);
-        startActivityForResult(i, REQUEST_PICK);
+        startActivityForResult(new PickerBuilder(this).setSelectedImageLimit(1).setShowCameraButton(true).createIntent(), REQUEST_PICK);
     }
 
     @Override
