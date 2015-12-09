@@ -18,6 +18,7 @@ import info.dourok.weimagepicker.image.SelectedBucket;
 
 /**
  * Created by John on 2015/11/21.
+ * 处理图片的选择限制、预览相关的逻辑
  */
 public abstract class DefaultImageCallback implements OnImageCallback {
     private static final int REQUEST_TAKE_PHOTO = 0x12;

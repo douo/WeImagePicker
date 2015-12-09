@@ -8,8 +8,4 @@
         android:id="@+id/action_done"
         android:title="@string/weimagepicker__action_done"
         app:showAsAction="always" />
-    <item
-        android:id="@+id/action_test"
-        android:title="test"
-        app:showAsAction="never" />
 </menu>
