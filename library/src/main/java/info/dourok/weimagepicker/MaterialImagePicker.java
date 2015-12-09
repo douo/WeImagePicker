@@ -58,24 +58,7 @@ public class MaterialImagePicker extends ImagePicker {
                                         }
         );
         mRecyclerView.setLayoutManager(layoutManager);
-        mImageCallback = new DefaultImageCallback(mActivity, mActivity.getSelectedBucket(), mActivity.getSelectedImageLimit()) {
-            @Override
-            public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
-                super.onImageSelect(holder, imageId, position);
-                mActivity.supportInvalidateOptionsMenu();
-            }
-
-            @Override
-            public void onCameraPhotoSaved(Uri uri) {
-                mSelectedBucket.add(ContentUris.parseId(uri));
-                mActivity.done(mSelectedBucket.toUriArray());
-            }
-
-            @Override
-            public void onSelectedBucketUpdated(SelectedBucket selectedBucket) {
-                mAdapter.notifyDataSetChanged();
-            }
-        };
+        mImageCallback = createImageCallback();
         mAdapter = new ImageAdapter(mActivity.getSupportActionBar().getThemedContext(), null, mActivity.isShowCameraButton(), mImageCallback);
         mRecyclerView.setAdapter(mAdapter);
         mBucketSpinner = (Spinner) findViewById(R.id.toolbar_spinner);
@@ -94,6 +77,26 @@ public class MaterialImagePicker extends ImagePicker {
         });
     }
 
+    protected DefaultImageCallback createImageCallback() {
+        return new DefaultImageCallback(mActivity, mActivity.getSelectedBucket(), mActivity.getSelectedImageLimit()) {
+            @Override
+            public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
+                super.onImageSelect(holder, imageId, position);
+                mActivity.supportInvalidateOptionsMenu();
+            }
+
+            @Override
+            public void onCameraPhotoSaved(Uri uri) {
+                mSelectedBucket.add(ContentUris.parseId(uri));
+                mActivity.done(mSelectedBucket.toUriArray());
+            }
+
+            @Override
+            public void onSelectedBucketUpdated(SelectedBucket selectedBucket) {
+                mAdapter.notifyDataSetChanged();
+            }
+        };
+    }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {

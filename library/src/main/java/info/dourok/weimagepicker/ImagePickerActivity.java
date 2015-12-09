@@ -42,7 +42,8 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         }
         showCameraButton = getIntent().getBooleanExtra(KEY_SHOW_CAMERA_BUTTON, false);
         selectedImageLimit = getIntent().getIntExtra(KEY_SELECTED_IMAGE_LIMIT, 0);
-        mPicker = new MaterialImagePicker(this);
+        //mPicker = new MaterialImagePicker(this);
+        mPicker = new WeChatImagePicker(this);
         setContentView(mPicker.getLayoutId());
         mPicker.initUi();
         mManager = new ImageContentManager(this);
