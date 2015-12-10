@@ -13,7 +13,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.MimeTypeMap;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import info.dourok.weimagepicker.image.Bucket;
@@ -26,11 +28,13 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     List<Bucket> mBuckets;
     SelectedBucket mSelectedBucket;
     ImagePicker mPicker;
-    public final static String KEY_SHOW_CAMERA_BUTTON = "info.dourok.weimagepicker:KEY_SHOW_CAMERA_BUTTON";
-    public final static String KEY_SELECTED_IMAGE_LIMIT = "info.dourok.weimagepicker:KEY_MAX_IMAGE";
-
+    public final static String EXTRA_SHOW_CAMERA_BUTTON = "info.dourok.weimagepicker.extra.SHOW_CAMERA_BUTTON";
+    public final static String EXTRA_SELECTED_IMAGE_LIMIT = "info.dourok.weimagepicker.extra.SELECTED_IMAGE_LIMIT";
+    public final static String EXTRA_ALLOW_MULTIPLE = "info.dourok.weimagepicker.extra.ALLOW_MULTIPLE";
+    public final static String EXTRA_PICKER = "info.dourok.weimagepicker.extra.PICKER";
     private boolean showCameraButton;
     private int selectedImageLimit;
+    private boolean allowMultiple;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +44,37 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         } else {
             mSelectedBucket = new SelectedBucket();
         }
-        showCameraButton = getIntent().getBooleanExtra(KEY_SHOW_CAMERA_BUTTON, false);
-        selectedImageLimit = getIntent().getIntExtra(KEY_SELECTED_IMAGE_LIMIT, 0);
-        //mPicker = new MaterialImagePicker(this);
-        mPicker = new WeChatImagePicker(this);
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+        allowMultiple = intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, intent.getBooleanExtra(EXTRA_ALLOW_MULTIPLE, false));
+        showCameraButton = intent.getBooleanExtra(EXTRA_SHOW_CAMERA_BUTTON, Intent.ACTION_GET_CONTENT.equals(action));
+        selectedImageLimit = intent.getIntExtra(EXTRA_SELECTED_IMAGE_LIMIT, allowMultiple ? 0 : 1);
+
+        String pickerClass = intent.getStringExtra(EXTRA_PICKER);
+        if (pickerClass != null) {
+            try {
+                mPicker = (ImagePicker) Class.forName(pickerClass).getConstructor(ImagePickerActivity.class).newInstance(this);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        if (mPicker == null) {
+            //mPicker = new MaterialImagePicker(this);
+            mPicker = new WeChatImagePicker(this);
+        }
         setContentView(mPicker.getLayoutId());
         mPicker.initUi();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        mime.getExtensionFromMimeType(type);
         mManager = new ImageContentManager(this);
         mManager.prepare(new ImageContentManager.PrepareCallback() {
             @Override

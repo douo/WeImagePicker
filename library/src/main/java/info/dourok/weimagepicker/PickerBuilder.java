@@ -16,12 +16,12 @@ public class PickerBuilder {
     }
 
     public PickerBuilder setShowCameraButton(boolean show) {
-        intent.putExtra(ImagePickerActivity.KEY_SHOW_CAMERA_BUTTON, show);
+        intent.putExtra(ImagePickerActivity.EXTRA_SHOW_CAMERA_BUTTON, show);
         return this;
     }
 
     public PickerBuilder setSelectedImageLimit(int limit) {
-        intent.putExtra(ImagePickerActivity.KEY_SELECTED_IMAGE_LIMIT, limit);
+        intent.putExtra(ImagePickerActivity.EXTRA_SELECTED_IMAGE_LIMIT, limit);
         return this;
     }
 
