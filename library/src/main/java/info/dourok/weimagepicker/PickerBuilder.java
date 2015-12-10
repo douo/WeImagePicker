@@ -13,6 +13,7 @@ public class PickerBuilder {
     public PickerBuilder(Context context) {
         this.mContext = context;
         intent = new Intent(context, ImagePickerActivity.class);
+        intent.putExtra(ImagePickerActivity.EXTRA_ALLOW_MULTIPLE, true);
     }
 
     public PickerBuilder setShowCameraButton(boolean show) {
@@ -22,6 +23,20 @@ public class PickerBuilder {
 
     public PickerBuilder setSelectedImageLimit(int limit) {
         intent.putExtra(ImagePickerActivity.EXTRA_SELECTED_IMAGE_LIMIT, limit);
+        return this;
+    }
+
+    /**
+     * @param allow Default is true
+     * @return Builder itself
+     */
+    public PickerBuilder setAllowMultiple(boolean allow) {
+        intent.putExtra(ImagePickerActivity.EXTRA_ALLOW_MULTIPLE, allow);
+        return this;
+    }
+
+    public PickerBuilder useWeChatTheme() {
+        intent.putExtra(ImagePickerActivity.EXTRA_PICKER, WeChatImagePicker.class.getName());
         return this;
     }
 

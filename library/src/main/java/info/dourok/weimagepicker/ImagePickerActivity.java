@@ -68,8 +68,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
             }
         }
         if (mPicker == null) {
-            //mPicker = new MaterialImagePicker(this);
-            mPicker = new WeChatImagePicker(this);
+            mPicker = new MaterialImagePicker(this);
         }
         setContentView(mPicker.getLayoutId());
         mPicker.initUi();
@@ -173,12 +172,13 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         if (uris.length > 0) {
             Intent data = new Intent();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                ClipData clipData = ClipData.newUri(getContentResolver(), "ImagePicker", uris[0]);
+                ClipData clipData = ClipData.newUri(getContentResolver(), "WeImagePicker", uris[0]);
                 for (int i = 1; i < uris.length; i++) {
                     clipData.addItem(new ClipData.Item(uris[i]));
                 }
                 data.setClipData(clipData);
             }
+            data.setData(uris[0]);// single content supported
             mSelectedBucket.putIntoIntent(data);
             setResult(RESULT_OK, data);
             finish();

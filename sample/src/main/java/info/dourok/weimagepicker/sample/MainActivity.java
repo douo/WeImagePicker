@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import info.dourok.weimagepicker.PickerBuilder;
 import info.dourok.weimagepicker.image.Bucket;
 import info.dourok.weimagepicker.image.SelectedBucket;
 
@@ -25,11 +26,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onClick(View view) {
-        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-        i.setType("image/*");
-        i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        i = Intent.createChooser(i, "Image");
-        //Intent i2 =new PickerBuilder(this).setSelectedImageLimit(1).setShowCameraButton(true).createIntent();
+//        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+//        i.setType("image/*");
+//        i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//        i = Intent.createChooser(i, "Image");
+        Intent i = new PickerBuilder(this).setSelectedImageLimit(1).setShowCameraButton(true).useWeChatTheme().createIntent();
         startActivityForResult(i, REQUEST_PICK);
     }
 
