@@ -11,26 +11,29 @@ import android.support.v4.content.CursorLoader;
  */
 public class SubBucket extends Bucket {
     private final static String SELECTION = MediaStore.Images.Media.BUCKET_ID + "=?";
+    private final static String MIME_TYPE_SELECTION = MediaStore.Images.Media.BUCKET_ID + "=? And " + MediaStore.Images.Media.MIME_TYPE + "=?";
     private final static String KEY_BUCKET = "info.dourok.weimagepicker.image.SubBucket";
-    private final static String KEY_NAME = KEY_BUCKET + ";KEY_NAME";
-    private final static String KEY_COUNT = KEY_BUCKET + ";KEY_COUNT";
-    private final static String KEY_FIRST_IMAGE_ID = KEY_BUCKET + ";KEY_FIRST_IMAGE_ID";
-    private final static String KEY_ID = KEY_BUCKET + ";KEY_ID";
-
+    private final static String KEY_NAME = KEY_BUCKET + ".NAME";
+    private final static String KEY_COUNT = KEY_BUCKET + ".COUNT";
+    private final static String KEY_FIRST_IMAGE_ID = KEY_BUCKET + ".FIRST_IMAGE_ID";
+    private final static String KEY_ID = KEY_BUCKET + "._ID";
+    private final static String KEY_MIME_TYPE = KEY_BUCKET + ";MIME_TYPE";
 
     private String name;
     private long id;
     private long firstImageId;
     private int count;
+    private String mimeType;
 
     SubBucket() {
     }
 
-    public SubBucket(long id, String name, long firstImageId) {
+    public SubBucket(long id, String name, long firstImageId, String mimeType) {
         this.id = id;
         this.name = name;
         this.firstImageId = firstImageId;
         count = 1;
+        this.mimeType = mimeType;
     }
 
     public String getName() {
@@ -49,13 +52,21 @@ public class SubBucket extends Bucket {
         return count;
     }
 
+    public String getMimeType() {
+        return mimeType;
+    }
+
     @Override
     public long getFirstImageId() {
         return firstImageId;
     }
 
     public CursorLoader createLoader(Context context) {
-        return new CursorLoader(context, ImageContentManager.URI, ImageContentManager.PROJECTION, SELECTION, new String[]{Long.toString(id)}, ImageContentManager.ORDER);
+        if (ImageContentManager.isExplicitMimeType(mimeType)) {
+            return new CursorLoader(context, ImageContentManager.URI, ImageContentManager.PROJECTION, MIME_TYPE_SELECTION, new String[]{Long.toString(id), mimeType}, ImageContentManager.ORDER);
+        } else {
+            return new CursorLoader(context, ImageContentManager.URI, ImageContentManager.PROJECTION, SELECTION, new String[]{Long.toString(id)}, ImageContentManager.ORDER);
+        }
     }
 
     @Override
@@ -64,6 +75,7 @@ public class SubBucket extends Bucket {
         bundle.putLong(KEY_FIRST_IMAGE_ID, getFirstImageId());
         bundle.putString(KEY_NAME, getName());
         bundle.putInt(KEY_COUNT, getCount());
+        bundle.putString(KEY_MIME_TYPE, getMimeType());
     }
 
     @Override
@@ -72,6 +84,7 @@ public class SubBucket extends Bucket {
         firstImageId = bundle.getLong(KEY_FIRST_IMAGE_ID);
         name = bundle.getString(KEY_NAME);
         count = bundle.getInt(KEY_COUNT);
+        mimeType = bundle.getString(KEY_MIME_TYPE);
     }
 
     @Override

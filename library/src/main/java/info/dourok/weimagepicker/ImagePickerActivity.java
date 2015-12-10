@@ -75,7 +75,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         mPicker.initUi();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         mime.getExtensionFromMimeType(type);
-        mManager = new ImageContentManager(this);
+        mManager = new ImageContentManager(this, type);
         mManager.prepare(new ImageContentManager.PrepareCallback() {
             @Override
             public void onPrepared() {

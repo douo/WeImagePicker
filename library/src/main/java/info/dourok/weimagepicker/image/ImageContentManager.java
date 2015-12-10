@@ -33,19 +33,21 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
             MediaStore.Images.Media.BUCKET_ID,
     };
     private final static String BUCKET_ORDER = MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
+    private final static String MIME_TYPE_SELECTION = MediaStore.Images.Media.MIME_TYPE + "=?";
     private final static int BUCKET_LOADER_ID = 1234;
     private FragmentActivity mContext;
     private List<Bucket> mBucketList;
     private Bucket mDeviceImageBucket;
     private PrepareCallback mPrepareCallback;
-
+    private String mimeType;
 
     public interface PrepareCallback {
         void onPrepared();
     }
 
-    public ImageContentManager(FragmentActivity context) {
+    public ImageContentManager(FragmentActivity context, String mimeType) {
         this.mContext = context;
+        this.mimeType = mimeType;
     }
 
     public void prepare(PrepareCallback callback) {
@@ -57,11 +59,19 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (BUCKET_LOADER_ID == id) {
-            return new CursorLoader(mContext, URI,
-                    BUCKET_PROJECTION,
-                    null,
-                    null,
-                    ImageContentManager.BUCKET_ORDER);
+            if (isExplicitMimeType(mimeType)) {
+                return new CursorLoader(mContext, URI,
+                        BUCKET_PROJECTION,
+                        MIME_TYPE_SELECTION,
+                        new String[]{mimeType},
+                        ImageContentManager.BUCKET_ORDER);
+            } else {
+                return new CursorLoader(mContext, URI,
+                        BUCKET_PROJECTION,
+                        null,
+                        null,
+                        ImageContentManager.BUCKET_ORDER);
+            }
         } else {
             throw new IllegalArgumentException("Unknown loader id:" + id);
         }
@@ -86,17 +96,17 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
             firstImageId = data.getLong(idColumn);
             SubBucket preBucket = null;
             do {
-                //DatabaseUtils.dumpCurrentRow(data, System.out);
+//                DatabaseUtils.dumpCurrentRow(data, System.out);
                 long bId = data.getLong(bIdColumn);
                 if (preBucket == null || bId != preBucket.getId()) {
-                    preBucket = new SubBucket(bId, data.getString(bNameColumn), data.getLong(idColumn));
+                    preBucket = new SubBucket(bId, data.getString(bNameColumn), data.getLong(idColumn), mimeType);
                     mBucketList.add(preBucket);
                 } else {
                     preBucket.count();
                 }
             } while (data.moveToNext());
         }
-        mDeviceImageBucket = new DeviceImageBucket(mContext.getString(R.string.weimagepicker__name_all_image), data.getCount(), firstImageId);
+        mDeviceImageBucket = new DeviceImageBucket(mContext.getString(R.string.weimagepicker__name_all_image), data.getCount(), firstImageId, mimeType);
         data.close();
         mPrepareCallback.onPrepared();
     }
@@ -130,6 +140,10 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
 
     private void d(String msg) {
         Log.d(ImageContentManager.class.getName(), msg);
+    }
+
+    public static boolean isExplicitMimeType(String mimeType) {
+        return (mimeType != null && !"image/*".equals(mimeType));
     }
 
 }
