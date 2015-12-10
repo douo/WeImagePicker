@@ -58,6 +58,10 @@ public abstract class DefaultImageCallback implements OnImageCallback {
         }
     }
 
+    public void previewSelected() {
+        mContext.startActivityForResult(ImagePreviewActivity.createIntentForSelectedBucket(mContext, mSelectedBucket, 0), REQUEST_PREVIEW);
+    }
+
     @Override
     public void onImageClick(ImageViewHolder holder, long imageId, int position) {
         mContext.startActivityForResult(ImagePreviewActivity.createIntentForBucket(mContext, currentBucket, mSelectedBucket, position), REQUEST_PREVIEW);
