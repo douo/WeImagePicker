@@ -7,6 +7,8 @@
     android:fitsSystemWindows="true"
     tools:context="info.dourok.weimagepicker.ImagePreviewActivity">
 
+    <include layout="@layout/weimagepicker__content_image_preview" />
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,8 +24,6 @@
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
-
-    <include layout="@layout/weimagepicker__content_image_preview" />
 
 
 </android.support.design.widget.CoordinatorLayout>
