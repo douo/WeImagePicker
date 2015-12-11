@@ -14,13 +14,13 @@
         android:theme="@style/AppTheme.NoActionBar" />
 ```
 
-如何就可以在你的 Activity 中使用了。调用只需一句：
+如此便可在 Activity 中使用，调用只需一句：
 
 ```
 startActivityForResult(new PickerBuilder(this).createIntent(), REQUEST_PICK);
 ```
 
-在 onActivtyResult 中处理完成的结果：
+在 onActivityResult 中处理完成的结果：
 
 ```
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -83,9 +83,9 @@ WeImagePicker 也支持一般获取图片 Intent 的调用方法。首先，需�
         }
     }
 
-### 在代码中直接处理结果
+### 不使用 startActivityForResult
 
-自定义 Activity 可以不用 Activity Result 的机制在代码中直接使用选择结果
+通过继承 ImagePickerActivity 可以不用 startActivityForResult 的机制在代码中直接使用选择结果
 
 ```
 public class CustomPickerActivity extends ImagePickerActivity {
@@ -97,14 +97,17 @@ public class CustomPickerActivity extends ImagePickerActivity {
 
     @Override
     protected int getSelectedImageLimit() {
-        return 0; // allow no limited multiple selction
+        return 0; // 不限制张数的多选
     }
 
     @Override
     protected boolean isShowCameraButton() {
-        return true;
+        return true; // 显示拍照按钮
     }
 
+    /**
+    * 用户完成选择，处理选择结果
+    **/
     @Override
     public void done(@NonNull Uri[] uris) {
         StringBuilder builder = new StringBuilder();
@@ -115,3 +118,7 @@ public class CustomPickerActivity extends ImagePickerActivity {
     }
 }
 ```
+
+### 自定义界面
+
+要自定义界面不建议继承 ImagePickerActivity ，最好是实现新的 ImagePicker 并传递给 ImagePickerActivity 更为方便，这一块还在改进中...
