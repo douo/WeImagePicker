@@ -68,7 +68,7 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
         selector.setVisibility(View.GONE);
         image.setScaleType(ImageView.ScaleType.CENTER);
         image.setBackgroundColor(0x33000000);
-        image.setImageResource(R.drawable.ic_camera_large);
+        image.setImageResource(R.drawable.weiimagepicker__ic_camera_large);
     }
 
     public void populate(Context context, ContentResolver resolver, Cursor cursor) {
