@@ -94,6 +94,7 @@ public class MaterialImagePicker extends ImagePicker {
             @Override
             public void onSelectedBucketUpdated(SelectedBucket selectedBucket) {
                 mAdapter.notifyDataSetChanged();
+                mActivity.supportInvalidateOptionsMenu();
             }
         };
     }
