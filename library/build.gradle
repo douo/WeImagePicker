@@ -3,7 +3,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 
-int version_int = 43
+int version_int = 46
 version = "0.1." + version_int
 android {
     compileSdkVersion 23
