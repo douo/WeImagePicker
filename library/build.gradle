@@ -7,7 +7,7 @@ int version_int = 43
 version = "0.1." + version_int
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.2"
     resourcePrefix "weimagepicker__"
     defaultConfig {
         minSdkVersion 14
