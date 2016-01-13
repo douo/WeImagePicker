@@ -203,9 +203,11 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
         mAdapter = new ImagePagerAdapter(data);
         mPager.setAdapter(mAdapter);
         int position = getIntent().getIntExtra(KEY_POSITION, 0);
-        setTitle((position + 1) + "/" + mBucket.getCount());
-        mPager.setCurrentItem(position);
-        checkSelected(position);
+        if (mBucket.getCount() > 0) {
+            setTitle((position + 1) + "/" + mBucket.getCount());
+            mPager.setCurrentItem(position);
+            checkSelected(position);
+        }
     }
 
     @Override
