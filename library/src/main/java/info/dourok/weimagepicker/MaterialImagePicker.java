@@ -78,7 +78,7 @@ public class MaterialImagePicker extends ImagePicker {
     }
 
     protected DefaultImageCallback createImageCallback() {
-        return new DefaultImageCallback(mActivity, mActivity.getSelectedBucket(), mActivity.getSelectedImageLimit()) {
+        return new DefaultImageCallback(mActivity, mActivity.getSelectedBucket(), mActivity.getMaxImageNumber()) {
             @Override
             public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
                 super.onImageSelect(holder, imageId, position);
@@ -126,7 +126,7 @@ public class MaterialImagePicker extends ImagePicker {
         if (count > 0) {
             item.setVisible(true);
             if (mActivity.hasMaxLimit()) {
-                item.setTitle(mActivity.getString(R.string.weimagepicker__action_done_limit, count, mActivity.getSelectedImageLimit()));
+                item.setTitle(mActivity.getString(R.string.weimagepicker__action_done_limit, count, mActivity.getMaxImageNumber()));
             } else {
                 item.setTitle(mActivity.getString(R.string.weimagepicker__action_done, count));
             }

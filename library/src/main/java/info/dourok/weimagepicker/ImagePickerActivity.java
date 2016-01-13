@@ -33,7 +33,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     public final static String EXTRA_ALLOW_MULTIPLE = "info.dourok.weimagepicker.extra.ALLOW_MULTIPLE";
     public final static String EXTRA_PICKER = "info.dourok.weimagepicker.extra.PICKER";
     private boolean showCameraButton;
-    private int selectedImageLimit;
+    private int maxImageNumber;
     private boolean allowMultiple;
 
     @Override
@@ -49,7 +49,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         String type = intent.getType();
         allowMultiple = intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, intent.getBooleanExtra(EXTRA_ALLOW_MULTIPLE, false));
         showCameraButton = intent.getBooleanExtra(EXTRA_SHOW_CAMERA_BUTTON, Intent.ACTION_GET_CONTENT.equals(action));
-        selectedImageLimit = intent.getIntExtra(EXTRA_SELECTED_IMAGE_LIMIT, allowMultiple ? 0 : 1);
+        maxImageNumber = intent.getIntExtra(EXTRA_SELECTED_IMAGE_LIMIT, allowMultiple ? 0 : 1);
 
         String pickerClass = intent.getStringExtra(EXTRA_PICKER);
         if (pickerClass != null) {
@@ -112,12 +112,12 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     /**
      * @return 大于 0 表示最多可选择的最大图片张数，小于等于零表示无限制图片张数
      */
-    protected int getSelectedImageLimit() {
-        return selectedImageLimit;
+    protected int getMaxImageNumber() {
+        return maxImageNumber;
     }
 
     protected final boolean hasMaxLimit() {
-        return getSelectedImageLimit() > 0;
+        return getMaxImageNumber() > 0;
     }
 
     @Override

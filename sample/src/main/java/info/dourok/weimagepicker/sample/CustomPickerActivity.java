@@ -15,7 +15,7 @@ public class CustomPickerActivity extends ImagePickerActivity {
     }
 
     @Override
-    protected int getSelectedImageLimit() {
+    protected int getMaxImageNumber() {
         return 0; // allow no limited multiple selction
     }
 
