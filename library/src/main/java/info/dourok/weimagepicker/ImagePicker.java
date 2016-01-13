@@ -41,6 +41,10 @@ abstract class ImagePicker {
 
     public abstract boolean onCreateOptionsMenu(Menu menu);
 
+    /**
+     * Call when all bucket initialized
+     * @param mBuckets bucket list
+     */
     public abstract void prepared(List<Bucket> mBuckets);
 
     public abstract boolean handleActivityResult(int requestCode, int resultCode, Intent data);

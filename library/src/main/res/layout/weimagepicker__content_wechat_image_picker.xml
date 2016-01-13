@@ -26,17 +26,19 @@
             android:id="@+id/toolbar_spinner"
             style="@style/weimagepicker__Widget.AppTheme.HeaderBar.Spinner"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <Button
+        <TextView
             android:id="@+id/preview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Preview" />
+            android:layout_gravity="center_vertical"
+            android:text="@string/weimagepicker__name_preview_no_selected" />
     </LinearLayout>
 </RelativeLayout>

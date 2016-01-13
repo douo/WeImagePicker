@@ -5,4 +5,6 @@
     <string name="weimagepicker__action_done_limit">OK(%1$d/%2$d)</string>
     <string name="weimagepicker__name_all_image">All Images</string>
     <string name="weimagepicker__name_selected_image">Selected</string>
+    <string name="weimagepicker__name_preview_no_selected">Preview</string>
+    <string name="weimagepicker__name_preview">Preview(%1$d)</string>
 </resources>
