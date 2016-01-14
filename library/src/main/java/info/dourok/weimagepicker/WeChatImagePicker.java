@@ -92,7 +92,7 @@ public class WeChatImagePicker extends ImagePicker {
     private void refreshPreviewButton() {
         if (mActivity.getSelectedBucket().getCount() == 0) {
             mPreviewBtn.setEnabled(false);
-            mPreviewBtn.setText(R.string.weimagepicker__name_preview_no_selected);
+            mPreviewBtn.setText(R.string.weimagepicker__name_preview_no_selection);
         } else {
             mPreviewBtn.setEnabled(true);
             mPreviewBtn.setText(mActivity.getString(R.string.weimagepicker__name_preview, mActivity.getSelectedBucket().getCount()));
@@ -148,17 +148,17 @@ public class WeChatImagePicker extends ImagePicker {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.action_done);
         Button btn = (Button) item.getActionView();
-
         int count = mActivity.getSelectedBucket().getCount();
         if (count > 0) {
-            item.setVisible(true);
+            btn.setEnabled(true);
             if (mActivity.hasMaxLimit()) {
                 btn.setText(mActivity.getString(R.string.weimagepicker__action_done_limit, count, mActivity.getMaxImageNumber()));
             } else {
                 btn.setText(mActivity.getString(R.string.weimagepicker__action_done, count));
             }
         } else {
-            item.setVisible(false);
+            btn.setEnabled(false);
+            btn.setText(R.string.weimagepicker__action_done_no_selection);
         }
         return true;
     }

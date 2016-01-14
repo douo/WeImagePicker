@@ -43,6 +43,7 @@ abstract class ImagePicker {
 
     /**
      * Call when all bucket initialized
+     *
      * @param mBuckets bucket list
      */
     public abstract void prepared(List<Bucket> mBuckets);

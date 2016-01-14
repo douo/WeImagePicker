@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/weimagepicker__wechat_content_bg"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="info.dourok.weimagepicker.ImagePickerActivity"
     tools:showIn="@layout/weimagepicker__activity_image_picker">
@@ -39,6 +40,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="@string/weimagepicker__name_preview_no_selected" />
+            android:text="@string/weimagepicker__name_preview_no_selection" />
     </LinearLayout>
 </RelativeLayout>

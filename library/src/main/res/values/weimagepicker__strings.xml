@@ -3,8 +3,9 @@
     <string name="weimagepicker__title_activity_image_picker">ImagePickerActivity</string>
     <string name="weimagepicker__action_done">OK(%1$d)</string>
     <string name="weimagepicker__action_done_limit">OK(%1$d/%2$d)</string>
+    <string name="weimagepicker__action_done_no_selection">OK</string>
     <string name="weimagepicker__name_all_image">All Images</string>
     <string name="weimagepicker__name_selected_image">Selected</string>
-    <string name="weimagepicker__name_preview_no_selected">Preview</string>
+    <string name="weimagepicker__name_preview_no_selection">Preview</string>
     <string name="weimagepicker__name_preview">Preview(%1$d)</string>
 </resources>

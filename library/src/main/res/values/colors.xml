@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="weimagepicker__preview_bottom_bg">#CC333333</color>
+    <color name="weimagepicker__wechat_accent">#ff45c01a</color>
+    <color name="weimagepicker__wechat_disable_bg">#ff3f7d2d</color>
+    <color name="weimagepicker__wechat_disable_fg">#ff9fbe96</color>
+    <color name="weimagepicker__wechat_color_primary">#ff393a3f</color>
+    <color name="weimagepicker__wechat_color_primary_dark">#ff303135</color>
+    <color name="weimagepicker__wechat_content_bg">#ff191919</color>
+    <color name="weimagepicker__wechat_content_fg">#ffcfcfcf</color>
 </resources>
