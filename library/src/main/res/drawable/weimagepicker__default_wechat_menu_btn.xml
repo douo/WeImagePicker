@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:insetBottom="@dimen/abc_button_inset_vertical_material"
+    android:insetLeft="@dimen/abc_button_inset_horizontal_material"
+    android:insetRight="@dimen/abc_button_inset_horizontal_material"
+    android:insetTop="@dimen/abc_button_inset_vertical_material">
+    <selector>
+        <item android:state_enabled="false">
+            <shape android:shape="rectangle">
+                <corners android:radius="@dimen/abc_control_corner_material" />
+                <solid android:color="@color/weimagepicker__wechat_disable_bg" />
+                <padding
+                    android:bottom="@dimen/abc_button_padding_vertical_material"
+                    android:left="@dimen/abc_button_padding_horizontal_material"
+                    android:right="@dimen/abc_button_padding_horizontal_material"
+                    android:top="@dimen/abc_button_padding_vertical_material" />
+            </shape>
+        </item>
+        <item>
+            <shape android:shape="rectangle">
+                <corners android:radius="@dimen/abc_control_corner_material" />
+                <solid android:color="@color/weimagepicker__wechat_accent" />
+                <padding
+                    android:bottom="@dimen/abc_button_padding_vertical_material"
+                    android:left="@dimen/abc_button_padding_horizontal_material"
+                    android:right="@dimen/abc_button_padding_horizontal_material"
+                    android:top="@dimen/abc_button_padding_vertical_material" />
+            </shape>
+        </item>
+    </selector>
+</inset>

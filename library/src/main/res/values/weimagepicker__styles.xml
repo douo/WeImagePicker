@@ -12,8 +12,9 @@
         <item name="colorAccent">@color/weimagepicker__wechat_accent</item>
         <item name="colorPrimary">@color/weimagepicker__wechat_color_primary</item>
         <item name="colorPrimaryDark">@color/weimagepicker__wechat_color_primary_dark</item>
-        <item name="colorButtonNormal">@color/weimagepicker__wechat_disable_bg</item>
-
+        <item name="weimagepicker__wechat_menu_btn_bg">
+            @drawable/weimagepicker__default_wechat_menu_btn
+        </item>
     </style>
 
     <style name="weimagepicker__Widget.AppTheme.HeaderBar.Spinner" parent="Widget.AppCompat.Light.Spinner.DropDown.ActionBar">
