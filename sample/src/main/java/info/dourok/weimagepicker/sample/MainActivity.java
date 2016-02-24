@@ -29,8 +29,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        System.out.println("onCreate");
+        getTheme().dump(Log.DEBUG, "Theme", "T:");
         try {
             debugTheme(this, getTheme());
         } catch (NoSuchMethodException e) {
@@ -61,13 +64,19 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < resIDs.length; i++) {
             Log.d(TAG, String.format("0x%08X:", resIDs[i]) + resources.getResourceName(resIDs[i]) + ":" + array.getString(i));
         }
-
     }
 
+    @Override
+    protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
+
+        System.out.println("onApplyThemeResource:" + getResources().getResourceName(resid) + " " + first);
+        super.onApplyThemeResource(theme, resid, first);
+    }
 
     public void pickerBuilder(View view) {
         Intent i = new PickerBuilder(this).setSelectedImageLimit(1).setShowCameraButton(true).useWeChatTheme().createIntent();
         startActivityForResult(i, REQUEST_PICK);
+        setTheme(R.style.AppTheme_Black);
     }
 
     public void generalIntent(View view) {
