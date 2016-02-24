@@ -2,6 +2,7 @@ package info.dourok.weimagepicker.sample;
 
 import android.content.ClipData;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,14 +23,26 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        System.out.println("onCreate");
+        getTheme().dump(Log.DEBUG, "Theme", "T:");
+
+
     }
 
+    @Override
+    protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
+
+        System.out.println("onApplyThemeResource:" + getResources().getResourceName(resid) + " " + first);
+        super.onApplyThemeResource(theme, resid, first);
+    }
 
     public void pickerBuilder(View view) {
         Intent i = new PickerBuilder(this).setSelectedImageLimit(1).setShowCameraButton(true).useWeChatTheme().createIntent();
         startActivityForResult(i, REQUEST_PICK);
+        setTheme(R.style.AppTheme_Black);
     }
 
     public void generalIntent(View view) {
