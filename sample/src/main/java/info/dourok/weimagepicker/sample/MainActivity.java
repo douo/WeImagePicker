@@ -1,8 +1,10 @@
 package info.dourok.weimagepicker.sample;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import info.dourok.weimagepicker.PickerBuilder;
 import info.dourok.weimagepicker.image.Bucket;
@@ -28,8 +34,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         System.out.println("onCreate");
         getTheme().dump(Log.DEBUG, "Theme", "T:");
+        try {
+            debugTheme(this, getTheme());
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
 
+    private static void debugTheme(Activity activity, Resources.Theme theme) throws NoSuchMethodException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        String TAG = "Theme";
+        Resources resources = activity.getResources();
+        Method mGetAllAttributes = Resources.Theme.class.getMethod("getAllAttributes");
+        Field fThemeResId = Resources.Theme.class.getDeclaredField("mThemeResId");
+        fThemeResId.setAccessible(true);
+        Field fKey = Resources.Theme.class.getDeclaredField("mKey");
+        int[] resIDs = (int[]) mGetAllAttributes.invoke(theme);
+        int themeResId = fThemeResId.getInt(theme);
+        TypedArray array = theme.obtainStyledAttributes(resIDs);
+        array.getString(0);
+        Log.d(TAG, String.format("0x%08X:", themeResId) + resources.getResourceName(themeResId));
+        Log.d(TAG, "==========================");
+        for (int i = 0; i < resIDs.length; i++) {
+            Log.d(TAG, String.format("0x%08X:", resIDs[i]) + resources.getResourceName(resIDs[i]) + ":" + array.getString(i));
+        }
     }
 
     @Override
