@@ -1,3 +1,4 @@
 <resources>
     <string name="weimagepicker__action_select">选择</string>
+    <string name="weimagepicker__image_quantifiers">%d张</string>
 </resources>
