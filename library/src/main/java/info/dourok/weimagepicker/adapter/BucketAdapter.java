@@ -94,7 +94,7 @@ public class BucketAdapter extends BaseAdapter {
                 //d("cancel:" + getAdapterPosition());
             }
         }).execute();
-        holder.count.setText(bucket.getCount() + "张");
+        holder.count.setText(String.format(mContext.getString(R.string.weimagepicker__image_quantifiers), bucket.getCount()));
         holder.name.setText(bucket.getName());
         return convertView;
     }
