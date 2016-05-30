@@ -14,9 +14,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import info.dourok.lruimage.LruImage;
-import info.dourok.lruimage.LruImageException;
 import info.dourok.lruimage.LruImageTask;
+import info.dourok.lruimage.LruTaskBuilder;
 import info.dourok.weimagepicker.R;
 import info.dourok.weimagepicker.image.Bucket;
 
@@ -25,6 +24,7 @@ import info.dourok.weimagepicker.image.Bucket;
  */
 public class BucketAdapter extends BaseAdapter {
 
+    LruImageTask currentTask;
     private Context mContext;
     private List<Bucket> mBucketList;
 
@@ -48,15 +48,6 @@ public class BucketAdapter extends BaseAdapter {
         return position;
     }
 
-    final class ViewHolder {
-        public ImageView image;
-        public TextView name;
-        public TextView count;
-        public CheckBox checkbox;
-    }
-
-    LruImageTask currentTask;
-
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
@@ -78,22 +69,14 @@ public class BucketAdapter extends BaseAdapter {
         }
         holder.image.setImageResource(R.drawable.weimagepicker__empty_image);
         LruThumbnail thumbnail = new LruThumbnail(mContext.getContentResolver(), bucket.getFirstImageId(), MediaStore.Images.Thumbnails.MINI_KIND);
-        currentTask = new LruImageTask(mContext, thumbnail, new LruImageTask.OnCompleteListener() {
-            @Override
-            public void onSuccess(LruImage lruImage, Bitmap bitmap) {
-                holder.image.setImageBitmap(bitmap);
-            }
-
-            @Override
-            public void onFailure(LruImage lruImage, LruImageException e) {
-                //d(getAdapterPosition() + " failure:" + e.getMessage());
-            }
-
-            @Override
-            public void cancel() {
-                //d("cancel:" + getAdapterPosition());
-            }
-        }).execute();
+        currentTask = new LruTaskBuilder(mContext)
+                .success(new LruTaskBuilder.SuccessCallback() {
+                    @Override
+                    public void call(Bitmap bitmap) {
+                        holder.image.setImageBitmap(bitmap);
+                    }
+                })
+                .execute(thumbnail);
         holder.count.setText(String.format(mContext.getString(R.string.weimagepicker__image_quantifiers), bucket.getCount()));
         holder.name.setText(bucket.getName());
         return convertView;
@@ -112,8 +95,14 @@ public class BucketAdapter extends BaseAdapter {
         return convertView;
     }
 
-
     private void d(String s) {
         Log.d(BucketAdapter.class.getName(), s);
+    }
+
+    final class ViewHolder {
+        public ImageView image;
+        public TextView name;
+        public TextView count;
+        public CheckBox checkbox;
     }
 }

@@ -11,9 +11,9 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import info.dourok.lruimage.LruImage;
 import info.dourok.lruimage.LruImageException;
 import info.dourok.lruimage.LruImageTask;
+import info.dourok.lruimage.LruTaskBuilder;
 import info.dourok.weimagepicker.R;
 
 /**
@@ -78,22 +78,26 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
         long origId = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media._ID));
         image.setImageResource(R.drawable.weimagepicker__empty_image);
         LruThumbnail thumbnail = new LruThumbnail(resolver, origId);
-        currentTask = new LruImageTask(context, thumbnail, new LruImageTask.OnCompleteListener() {
-            @Override
-            public void onSuccess(LruImage lruImage, Bitmap bitmap) {
-                image.setImageBitmap(bitmap);
-            }
-
-            @Override
-            public void onFailure(LruImage lruImage, LruImageException e) {
-                d(getAdapterPosition() + " failure:" + e.getMessage());
-            }
-
-            @Override
-            public void cancel() {
-                d("cancel:" + getAdapterPosition());
-            }
-        }).execute();
+        currentTask = new LruTaskBuilder(context)
+                .success(new LruTaskBuilder.SuccessCallback() {
+                    @Override
+                    public void call(Bitmap bitmap) {
+                        image.setImageBitmap(bitmap);
+                    }
+                })
+                .failure(new LruTaskBuilder.FailureCallback() {
+                    @Override
+                    public void call(LruImageException e) {
+                        d(getAdapterPosition() + " failure:" + e.getMessage());
+                    }
+                })
+                .cancel(new LruTaskBuilder.CancelCallback() {
+                    @Override
+                    public void call() {
+                        d("cancel:" + getAdapterPosition());
+                    }
+                })
+                .execute(thumbnail);
         boolean selected = callback.isSelected(this, origId);
         itemView.setTag(origId);
         selector.setTag(origId);
