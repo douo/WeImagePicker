@@ -11,6 +11,9 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import info.dourok.lruimage.LruImageException;
 import info.dourok.lruimage.LruImageTask;
 import info.dourok.lruimage.LruTaskBuilder;
@@ -20,6 +23,7 @@ import info.dourok.weimagepicker.R;
  * Created by John on 2015/11/16.
  */
 public class ImageViewHolder extends RecyclerView.ViewHolder {
+    private final static ExecutorService THUMB_LOADER = Executors.newFixedThreadPool(4);
     ImageButton selector;
     ImageView image;
     View mask;
@@ -79,6 +83,7 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
         image.setImageResource(R.drawable.weimagepicker__empty_image);
         LruThumbnail thumbnail = new LruThumbnail(resolver, origId);
         currentTask = new LruTaskBuilder(context)
+                .setImageLoader(THUMB_LOADER)
                 .success(new LruTaskBuilder.SuccessCallback() {
                     @Override
                     public void call(Bitmap bitmap) {
@@ -104,9 +109,7 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
         setSelected(selected);
     }
 
-
     private void d(String s) {
         Log.d("ImageViewHolder", s);
     }
-
 }

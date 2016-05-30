@@ -118,7 +118,7 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
         super.onSaveInstanceState(outState);
     }
 
-    private void checkSelected(int position) {
+    private void  checkSelected(int position) {
         mSelector.setSelected(mSelectedBucket.isSelected(mAdapter.getId(position)));
     }
 

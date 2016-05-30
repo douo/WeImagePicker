@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import info.dourok.lruimage.LruImageTask;
 import info.dourok.lruimage.LruTaskBuilder;
@@ -70,6 +72,7 @@ public class BucketAdapter extends BaseAdapter {
         holder.image.setImageResource(R.drawable.weimagepicker__empty_image);
         LruThumbnail thumbnail = new LruThumbnail(mContext.getContentResolver(), bucket.getFirstImageId(), MediaStore.Images.Thumbnails.MINI_KIND);
         currentTask = new LruTaskBuilder(mContext)
+                .setImageLoader(BUCKET_THUMB_LOADER)
                 .success(new LruTaskBuilder.SuccessCallback() {
                     @Override
                     public void call(Bitmap bitmap) {
@@ -105,4 +108,6 @@ public class BucketAdapter extends BaseAdapter {
         public TextView count;
         public CheckBox checkbox;
     }
+
+    private final static ExecutorService BUCKET_THUMB_LOADER = Executors.newFixedThreadPool(2);
 }
