@@ -32,11 +32,8 @@ package info.dourok.weimagepicker.adapter;/*
 
 
 import android.content.Context;
-
 import android.database.Cursor;
-
 import android.database.DataSetObserver;
-
 import android.support.v7.widget.RecyclerView;
 
 

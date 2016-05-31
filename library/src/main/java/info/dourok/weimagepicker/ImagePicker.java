@@ -22,6 +22,9 @@ abstract class ImagePicker {
         this.mActivity = activity;
     }
 
+    /**
+     * Init ui's code here call from Activity#onCreate
+     */
     protected abstract void initUi();
 
     protected View findViewById(int id) {

@@ -47,7 +47,6 @@ public class MaterialImagePicker extends ImagePicker {
         GridLayoutManager layoutManager = new GridLayoutManager(mActivity, 3);
         mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
                                             int space = mActivity.getResources().getDimensionPixelSize(R.dimen.weimagepicker__grid_item_margin);
-
                                             @Override
                                             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                                                 outRect.right = space;
@@ -106,12 +105,12 @@ public class MaterialImagePicker extends ImagePicker {
         } else {
             mAdapter.setShowCameraButton(false);
         }
-        mAdapter.swapCursor(data);
+        mAdapter.changeCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mAdapter.swapCursor(null);
+        mAdapter.changeCursor(null);
     }
 
     @Override
