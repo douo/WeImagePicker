@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.support.v4.content.Loader;
+import android.support.v4.util.DebugUtils;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +22,7 @@ import info.dourok.weimagepicker.adapter.BucketAdapter;
 import info.dourok.weimagepicker.adapter.ImageAdapter;
 import info.dourok.weimagepicker.adapter.ImageViewHolder;
 import info.dourok.weimagepicker.image.Bucket;
+import info.dourok.weimagepicker.image.DeviceImageBucket;
 import info.dourok.weimagepicker.image.SelectedBucket;
 
 /**
@@ -47,6 +49,7 @@ public class MaterialImagePicker extends ImagePicker {
         GridLayoutManager layoutManager = new GridLayoutManager(mActivity, 3);
         mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
                                             int space = mActivity.getResources().getDimensionPixelSize(R.dimen.weimagepicker__grid_item_margin);
+
                                             @Override
                                             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                                                 outRect.right = space;
@@ -100,17 +103,21 @@ public class MaterialImagePicker extends ImagePicker {
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (loader.getId() == 0) {
+        StringBuilder sb = new StringBuilder();
+        DebugUtils.buildShortClassTag(loader, sb);
+        System.out.println(sb);
+        if (mActivity.getCurrentBucket() instanceof DeviceImageBucket) {
             mAdapter.setShowCameraButton(mActivity.isShowCameraButton());
         } else {
             mAdapter.setShowCameraButton(false);
         }
-        mAdapter.changeCursor(data);
+        mAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mAdapter.changeCursor(null);
+
+        mAdapter.swapCursor(null);
     }
 
     @Override

@@ -35,6 +35,7 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
     private final static String BUCKET_ORDER = MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
     private final static String MIME_TYPE_SELECTION = MediaStore.Images.Media.MIME_TYPE + "=?";
     private final static int BUCKET_LOADER_ID = 1234;
+    public static final String TAG = "ImageContentManager";
     private FragmentActivity mContext;
     private List<Bucket> mBucketList;
     private Bucket mDeviceImageBucket;
@@ -58,6 +59,7 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.d(TAG,"onCreateLoader:"+id);
         if (BUCKET_LOADER_ID == id) {
             if (isExplicitMimeType(mimeType)) {
                 return new CursorLoader(mContext, URI,
@@ -107,7 +109,6 @@ public class ImageContentManager implements LoaderManager.LoaderCallbacks<Cursor
             } while (data.moveToNext());
         }
         mDeviceImageBucket = new DeviceImageBucket(mContext.getString(R.string.weimagepicker__name_all_image), data.getCount(), firstImageId, mimeType);
-        data.close();
         mPrepareCallback.onPrepared();
     }
 

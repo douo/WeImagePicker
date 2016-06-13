@@ -29,18 +29,22 @@ import info.dourok.weimagepicker.image.SelectedBucket;
 
 public class ImagePickerActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 0x1;
-    ImageContentManager mManager;
-    List<Bucket> mBuckets;
-    SelectedBucket mSelectedBucket;
-    ImagePicker mPicker;
     public final static String EXTRA_SHOW_CAMERA_BUTTON = "info.dourok.weimagepicker.extra.SHOW_CAMERA_BUTTON";
     public final static String EXTRA_SELECTED_IMAGE_LIMIT = "info.dourok.weimagepicker.extra.SELECTED_IMAGE_LIMIT";
     public final static String EXTRA_ALLOW_MULTIPLE = "info.dourok.weimagepicker.extra.ALLOW_MULTIPLE";
     public final static String EXTRA_PICKER = "info.dourok.weimagepicker.extra.PICKER";
+    public static final int BUCKET_LOADER_ID = 42;
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 0x1;
+    private static final String TAG = "ImagePickerActivity";
+    ImageContentManager mManager;
+    List<Bucket> mBuckets;
+    SelectedBucket mSelectedBucket;
+    ImagePicker mPicker;
+    int bucketIndex;
     private boolean showCameraButton;
     private int maxImageNumber;
     private boolean allowMultiple;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,8 +161,14 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         return mBuckets;
     }
 
+    public Bucket getCurrentBucket() {
+        return getBuckets().get(bucketIndex);
+    }
+
+
     public void switchBucket(int position) {
-        getSupportLoaderManager().initLoader(position, null, this);
+        bucketIndex = position;
+        getSupportLoaderManager().restartLoader(BUCKET_LOADER_ID, null, this);
     }
 
     @Override
@@ -188,12 +198,16 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         d("onCreateLoader:" + id);
-        return mBuckets.get(id).createLoader(this);
+        if (id == BUCKET_LOADER_ID) {
+            return mBuckets.get(bucketIndex).createLoader(this);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        d("onLoadFinished:" + loader.getId());
+        d("onLoadFinished:" + loader.getId() + " cursor:" + System.identityHashCode(data));
         mPicker.onLoadFinished(loader, data);
     }
 
@@ -251,5 +265,30 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
             setResult(RESULT_CANCELED);
             finish();
         }
+    }
+
+
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart");
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        Log.d(TAG, "onRetainCustomNonConfigurationInstance");
+        return super.onRetainCustomNonConfigurationInstance();
     }
 }

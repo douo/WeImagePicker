@@ -23,6 +23,7 @@ import info.dourok.weimagepicker.adapter.BucketAdapter;
 import info.dourok.weimagepicker.adapter.ImageAdapter;
 import info.dourok.weimagepicker.adapter.ImageViewHolder;
 import info.dourok.weimagepicker.image.Bucket;
+import info.dourok.weimagepicker.image.DeviceImageBucket;
 import info.dourok.weimagepicker.image.SelectedBucket;
 
 /**
@@ -125,7 +126,7 @@ public class WeChatImagePicker extends ImagePicker {
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (loader.getId() == 0) {
+        if (mActivity.getCurrentBucket() instanceof DeviceImageBucket) {
             mAdapter.setShowCameraButton(mActivity.isShowCameraButton());
         } else {
             mAdapter.setShowCameraButton(false);
