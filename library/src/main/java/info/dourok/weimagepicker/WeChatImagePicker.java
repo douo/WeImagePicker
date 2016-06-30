@@ -101,7 +101,7 @@ public class WeChatImagePicker extends ImagePicker {
     }
 
     protected DefaultImageCallback createImageCallback() {
-        return new DefaultImageCallback(mContext, mContext.getSelectedBucket(), mContext.getMaxImageNumber()) {
+        return new DefaultImageCallback(mContext, this, mContext.getSelectedBucket(), mContext.getMaxImageNumber()) {
             @Override
             public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
                 super.onImageSelect(holder, imageId, position);
@@ -143,6 +143,11 @@ public class WeChatImagePicker extends ImagePicker {
     @Override
     public int getLayoutId() {
         return R.layout.weimagepicker__activity_wechat_mage_picker;
+    }
+
+    @Override
+    public int getPreviewTheme() {
+        return R.style.weimagepicker__AppTheme_WechatOverlay;
     }
 
     @Override

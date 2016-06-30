@@ -2,6 +2,7 @@ package info.dourok.weimagepicker;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.annotation.StyleRes;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.Menu;
@@ -16,7 +17,7 @@ import info.dourok.weimagepicker.image.Bucket;
  * ImagePicker 负责对数据的展示
  * Created by DouO on 2015/12/9.
  */
-abstract class ImagePicker {
+public abstract class ImagePicker {
     protected ImagePickerActivity mContext;
 
     public ImagePicker(ImagePickerActivity activity) {
@@ -39,6 +40,12 @@ abstract class ImagePicker {
 
     public abstract int getLayoutId();
 
+
+    @StyleRes
+    public int getPreviewTheme() {
+        return -1; //NO_THEME
+    }
+
     public abstract boolean onPrepareOptionsMenu(Menu menu);
 
     public abstract boolean onOptionsItemSelected(MenuItem item);
@@ -48,7 +55,8 @@ abstract class ImagePicker {
     /**
      * Call when all bucket initialized
      *
-     * @param buckets bucket list */
+     * @param buckets bucket list
+     */
     public abstract void prepared(List<Bucket> buckets);
 
     public abstract boolean handleActivityResult(int requestCode, int resultCode, Intent data);

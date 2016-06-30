@@ -1,6 +1,7 @@
 package info.dourok.weimagepicker.adapter;
 
 /**
+ * ImageViewHolder 的回调
  * Created by John on 2015/11/18.
  */
 public interface OnImageCallback {

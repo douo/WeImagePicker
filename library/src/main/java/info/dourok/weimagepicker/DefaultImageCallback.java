@@ -19,6 +19,7 @@ import info.dourok.weimagepicker.image.SelectedBucket;
 /**
  * Created by John on 2015/11/21.
  * 处理图片的选择限制、预览相关的逻辑
+ * 直接操作 SelectedBucket
  */
 public abstract class DefaultImageCallback implements OnImageCallback {
     private static final int REQUEST_TAKE_PHOTO = 0x12;
@@ -27,12 +28,15 @@ public abstract class DefaultImageCallback implements OnImageCallback {
     Activity mContext;
     SelectedBucket mSelectedBucket;
     Bucket currentBucket;
+    ImagePicker mPicker;
+    File photoFile;
     private int maxImageCount;
 
-    public DefaultImageCallback(Activity context, SelectedBucket selectedBucket, int maxImageCount) {
+    public DefaultImageCallback(Activity context, ImagePicker picker, SelectedBucket selectedBucket, int maxImageCount) {
         mContext = context;
         mSelectedBucket = selectedBucket;
         currentBucket = selectedBucket;
+        mPicker = picker;
         this.maxImageCount = maxImageCount;
     }
 
@@ -59,12 +63,20 @@ public abstract class DefaultImageCallback implements OnImageCallback {
     }
 
     public void previewSelected() {
-        mContext.startActivityForResult(ImagePreviewActivity.createIntentForSelectedBucket(mContext, mSelectedBucket, 0), REQUEST_PREVIEW);
+        Intent intent = ImagePreviewActivity.createIntentForSelectedBucket(mContext, mSelectedBucket, 0);
+        if (mPicker.getPreviewTheme() != ImagePreviewActivity.NO_THEME) {
+            intent.putExtra(ImagePreviewActivity.KEY_THEME, mPicker.getPreviewTheme());
+        }
+        mContext.startActivityForResult(intent, REQUEST_PREVIEW);
     }
 
     @Override
     public void onImageClick(ImageViewHolder holder, long imageId, int position) {
-        mContext.startActivityForResult(ImagePreviewActivity.createIntentForBucket(mContext, currentBucket, mSelectedBucket, position), REQUEST_PREVIEW);
+        Intent intent = ImagePreviewActivity.createIntentForBucket(mContext, currentBucket, mSelectedBucket, position);
+        if (mPicker.getPreviewTheme() != ImagePreviewActivity.NO_THEME) {
+            intent.putExtra(ImagePreviewActivity.KEY_THEME, mPicker.getPreviewTheme());
+        }
+        mContext.startActivityForResult(intent, REQUEST_PREVIEW);
     }
 
     @Override
@@ -75,8 +87,6 @@ public abstract class DefaultImageCallback implements OnImageCallback {
     private File createNewPhotoFile() {
         return new File(String.valueOf(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)) + File.separator + "Image" + "_" + System.currentTimeMillis() + ".jpg");
     }
-
-    File photoFile;
 
     private void dispatchTakePictureIntent() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

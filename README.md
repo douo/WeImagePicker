@@ -83,7 +83,7 @@ WeImagePicker 也支持一般获取图片 Intent 的调用方法。首先，需�
         }
     }
 
-### 不使用 startActivityForResult
+### 不通过 Intent
 
 通过继承 ImagePickerActivity 可以不用 startActivityForResult 的机制在代码中直接使用选择结果
 
@@ -109,7 +109,7 @@ public class CustomPickerActivity extends ImagePickerActivity {
     * 用户完成选择，处理选择结果
     **/
     @Override
-    public void done(@NonNull Uri[] uris) {
+    public void onFinish(@NonNull Uri[] uris) {
         StringBuilder builder = new StringBuilder();
         for (Uri uri : uris) {
             builder.append(uri.toString()).append('\n');

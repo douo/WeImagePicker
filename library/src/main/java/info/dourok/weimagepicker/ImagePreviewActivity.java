@@ -21,35 +21,81 @@ import android.view.ViewGroup;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
-import info.dourok.weimagepicker.image.DeviceImageBucket;
 import info.dourok.weimagepicker.image.Bucket;
+import info.dourok.weimagepicker.image.DeviceImageBucket;
 import info.dourok.weimagepicker.image.ImageContentManager;
 import info.dourok.weimagepicker.image.SelectedBucket;
 import info.dourok.weimagepicker.image.SubBucket;
 
+/**
+ * 可以通过 {@link ImagePreviewActivity#KEY_THEME} 直接指定主题
+ */
 public class ImagePreviewActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+    public static final String KEY_BUCKET_TYPE = "KEY_BUCKET_TYPE";
+    public static final String KEY_POSITION = "KEY_POSITION";
+    public static final String KEY_THEME = "KEY_THEME";
+    public static final int BUCKET_TYPE_SUB = 0x1;
+    public static final int BUCKET_TYPE_SELECTED = BUCKET_TYPE_SUB + 1;
+    public static final int BUCKET_TYPE_DEVICE = BUCKET_TYPE_SELECTED + 1;
+    public static final int NO_THEME = -1;
     private static final String KEY_MODIFIED = "KEY_MODIFIED";
+    private final static int LOADER_ID = 0x12;
     Bucket mBucket;
     SelectedBucket mSelectedBucket;
     ViewPager mPager;
     View mBottomBar;
     View mSelectorText;
     View mSelector;
-    public static final String KEY_BUCKET_TYPE = "KEY_BUCKET_TYPE";
-    public static final String KEY_POSITION = "KEY_POSITION";
-
-    public static final int BUCKET_TYPE_SUB = 0x1;
-    public static final int BUCKET_TYPE_SELECTED = BUCKET_TYPE_SUB + 1;
-    public static final int BUCKET_TYPE_DEVICE = BUCKET_TYPE_SELECTED + 1;
-
-    private final static int LOADER_ID = 0x12;
-    private boolean modified;
     View mDecorView;
+    ImagePagerAdapter mAdapter;
+    private boolean modified;
     private boolean mDecorVisible;
+
+    public static Intent createIntentForSubBucket(Context context, SubBucket bucket, SelectedBucket selectedBucket, int position) {
+        Intent i = new Intent(context, ImagePreviewActivity.class);
+        i.putExtra(KEY_BUCKET_TYPE, BUCKET_TYPE_SUB);
+        i.putExtra(KEY_POSITION, position);
+        bucket.putIntoIntent(i);
+        selectedBucket.putIntoIntent(i);
+        return i;
+    }
+
+    public static Intent createIntentForSelectedBucket(Context context, SelectedBucket selectedBucket, int position) {
+        Intent i = new Intent(context, ImagePreviewActivity.class);
+        i.putExtra(KEY_BUCKET_TYPE, BUCKET_TYPE_SELECTED);
+        i.putExtra(KEY_POSITION, position);
+        selectedBucket.putIntoIntent(i);
+        return i;
+    }
+
+    public static Intent createIntentForDeviceImageBucket(Context context, DeviceImageBucket bucket, SelectedBucket selectedBucket, int position) {
+        Intent i = new Intent(context, ImagePreviewActivity.class);
+        i.putExtra(KEY_BUCKET_TYPE, BUCKET_TYPE_DEVICE);
+        i.putExtra(KEY_POSITION, position);
+        bucket.putIntoIntent(i);
+        selectedBucket.putIntoIntent(i);
+        return i;
+    }
+
+    public static Intent createIntentForBucket(Context context, Bucket bucket, SelectedBucket selectedBucket, int position) {
+        if (bucket instanceof DeviceImageBucket) {
+            return createIntentForDeviceImageBucket(context, (DeviceImageBucket) bucket, selectedBucket, position);
+        } else if (bucket instanceof SubBucket) {
+            return createIntentForSubBucket(context, (SubBucket) bucket, selectedBucket, position);
+        } else if (bucket instanceof SelectedBucket) {
+            return createIntentForSelectedBucket(context, selectedBucket, position);
+        } else {
+            throw new IllegalArgumentException("Unknown bucket type.:" + bucket.getName());
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        int theme = getIntent().getIntExtra(KEY_THEME, NO_THEME);
+        if (theme != NO_THEME) {
+            setTheme(R.style.weimagepicker__AppTheme_WechatOverlay);
+        }
         mDecorVisible = true;
         setContentView(R.layout.weimagepicker__activity_image_preview);
         mDecorView = getWindow().getDecorView();
@@ -118,7 +164,7 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
         super.onSaveInstanceState(outState);
     }
 
-    private void  checkSelected(int position) {
+    private void checkSelected(int position) {
         mSelector.setSelected(mSelectedBucket.isSelected(mAdapter.getId(position)));
     }
 
@@ -191,8 +237,6 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
         super.finish();
     }
 
-    ImagePagerAdapter mAdapter;
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return mBucket.createLoader(this);
@@ -215,6 +259,19 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void d(String s) {
+        Log.d("ImagePreviewActivity", s);
+    }
 
     private class ImagePagerAdapter extends PagerAdapter {
         long[] idsArray;
@@ -265,58 +322,6 @@ public class ImagePreviewActivity extends AppCompatActivity implements LoaderMan
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((View) object);
             d("destroyItem:" + position + " " + object);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void d(String s) {
-        Log.d("ImagePreviewActivity", s);
-    }
-
-    public static Intent createIntentForSubBucket(Context context, SubBucket bucket, SelectedBucket selectedBucket, int position) {
-        Intent i = new Intent(context, ImagePreviewActivity.class);
-        i.putExtra(KEY_BUCKET_TYPE, BUCKET_TYPE_SUB);
-        i.putExtra(KEY_POSITION, position);
-        bucket.putIntoIntent(i);
-        selectedBucket.putIntoIntent(i);
-        return i;
-    }
-
-    public static Intent createIntentForSelectedBucket(Context context, SelectedBucket selectedBucket, int position) {
-        Intent i = new Intent(context, ImagePreviewActivity.class);
-        i.putExtra(KEY_BUCKET_TYPE, BUCKET_TYPE_SELECTED);
-        i.putExtra(KEY_POSITION, position);
-        selectedBucket.putIntoIntent(i);
-        return i;
-    }
-
-    public static Intent createIntentForDeviceImageBucket(Context context, DeviceImageBucket bucket, SelectedBucket selectedBucket, int position) {
-        Intent i = new Intent(context, ImagePreviewActivity.class);
-        i.putExtra(KEY_BUCKET_TYPE, BUCKET_TYPE_DEVICE);
-        i.putExtra(KEY_POSITION, position);
-        bucket.putIntoIntent(i);
-        selectedBucket.putIntoIntent(i);
-        return i;
-    }
-
-    public static Intent createIntentForBucket(Context context, Bucket bucket, SelectedBucket selectedBucket, int position) {
-        if (bucket instanceof DeviceImageBucket) {
-            return createIntentForDeviceImageBucket(context, (DeviceImageBucket) bucket, selectedBucket, position);
-        } else if (bucket instanceof SubBucket) {
-            return createIntentForSubBucket(context, (SubBucket) bucket, selectedBucket, position);
-        } else if (bucket instanceof SelectedBucket) {
-            return createIntentForSelectedBucket(context, selectedBucket, position);
-        } else {
-            throw new IllegalArgumentException("Unknown bucket type.:" + bucket.getName());
         }
     }
 }

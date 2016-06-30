@@ -80,7 +80,7 @@ public class MaterialImagePicker extends ImagePicker {
     }
 
     protected DefaultImageCallback createImageCallback() {
-        return new DefaultImageCallback(mContext, mContext.getSelectedBucket(), mContext.getMaxImageNumber()) {
+        return new DefaultImageCallback(mContext, this, mContext.getSelectedBucket(), mContext.getMaxImageNumber()) {
             @Override
             public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
                 super.onImageSelect(holder, imageId, position);
