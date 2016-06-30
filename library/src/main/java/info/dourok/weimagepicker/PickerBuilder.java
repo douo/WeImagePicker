@@ -16,11 +16,21 @@ public class PickerBuilder {
         intent.putExtra(ImagePickerActivity.EXTRA_ALLOW_MULTIPLE, true);
     }
 
+    /**
+     * 是否要在所有图片页显示拍照按钮
+     * @param show
+     * @return
+     */
     public PickerBuilder setShowCameraButton(boolean show) {
         intent.putExtra(ImagePickerActivity.EXTRA_SHOW_CAMERA_BUTTON, show);
         return this;
     }
 
+    /**
+     * 限制选择图片张数
+     * @param limit
+     * @return
+     */
     public PickerBuilder setSelectedImageLimit(int limit) {
         intent.putExtra(ImagePickerActivity.EXTRA_SELECTED_IMAGE_LIMIT, limit);
         return this;

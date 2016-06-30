@@ -26,14 +26,18 @@
         <Spinner
             android:id="@+id/toolbar_spinner"
             style="@style/weimagepicker__Widget.AppTheme.HeaderBar.Spinner"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:padding="4dp" />
 
         <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:background="#333" />
 
         <TextView
             android:id="@+id/preview"

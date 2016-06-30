@@ -13,22 +13,23 @@ import java.util.List;
 import info.dourok.weimagepicker.image.Bucket;
 
 /**
- * Created by John on 2015/12/9.
+ * ImagePicker 负责对数据的展示
+ * Created by DouO on 2015/12/9.
  */
 abstract class ImagePicker {
-    protected ImagePickerActivity mActivity;
+    protected ImagePickerActivity mContext;
 
     public ImagePicker(ImagePickerActivity activity) {
-        this.mActivity = activity;
+        this.mContext = activity;
     }
 
     /**
-     * Init ui's code here call from Activity#onCreate
+     * Init ui here, call from Activity#onCreate
      */
-    protected abstract void initUi();
+    protected abstract void onViewCreated(View contentView);
 
     protected View findViewById(int id) {
-        return mActivity.findViewById(id);
+        return mContext.findViewById(id);
     }
 
 
@@ -47,8 +48,8 @@ abstract class ImagePicker {
     /**
      * Call when all bucket initialized
      *
-     * @param mBuckets bucket list */
-    public abstract void prepared(List<Bucket> mBuckets);
+     * @param buckets bucket list */
+    public abstract void prepared(List<Bucket> buckets);
 
     public abstract boolean handleActivityResult(int requestCode, int resultCode, Intent data);
 

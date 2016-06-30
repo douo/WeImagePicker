@@ -34,13 +34,14 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     public final static String EXTRA_ALLOW_MULTIPLE = "info.dourok.weimagepicker.extra.ALLOW_MULTIPLE";
     public final static String EXTRA_PICKER = "info.dourok.weimagepicker.extra.PICKER";
     public static final int BUCKET_LOADER_ID = 42;
+    public static final int NO_LIMIT = 0;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 0x1;
     private static final String TAG = "ImagePickerActivity";
     ImageContentManager mManager;
     List<Bucket> mBuckets;
     SelectedBucket mSelectedBucket;
     ImagePicker mPicker;
-    int bucketIndex;
+    private int bucketIndex;
     private boolean showCameraButton;
     private int maxImageNumber;
     private boolean allowMultiple;
@@ -54,6 +55,16 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         } else {
             mSelectedBucket = new SelectedBucket();
         }
+        if (checkPermission()) {
+            initPicker();
+        }
+    }
+
+    /**
+     * @return false 需要向用户请求权限;
+     * true 已经有所需权限
+     */
+    private boolean checkPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -61,43 +72,38 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
                 // Should we show an explanation?
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
                     // Show an expanation to the user *asynchronously* -- don't block
                     // this thread waiting for the user's response! After the user
                     // sees the explanation, try again to request the permission.
-
                     ActivityCompat.requestPermissions(this,
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                             MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
                 } else {
-
                     // No explanation needed, we can request the permission.
-
-
                     ActivityCompat.requestPermissions(this,
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                             MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
                 }
-
                 // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
                 // app-defined int constant. The callback method gets the
                 // result of the request.
+                return false;
             } else {
-                init();
+                return true;
             }
         } else {
-            init();
+            return true;
         }
 
     }
 
-    private void init() {
+    private void initPicker() {
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
         allowMultiple = intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, intent.getBooleanExtra(EXTRA_ALLOW_MULTIPLE, false));
         showCameraButton = intent.getBooleanExtra(EXTRA_SHOW_CAMERA_BUTTON, Intent.ACTION_GET_CONTENT.equals(action));
-        maxImageNumber = intent.getIntExtra(EXTRA_SELECTED_IMAGE_LIMIT, allowMultiple ? 0 : 1);
+        maxImageNumber = intent.getIntExtra(EXTRA_SELECTED_IMAGE_LIMIT, allowMultiple ? NO_LIMIT : 1);
 
         String pickerClass = intent.getStringExtra(EXTRA_PICKER);
         if (pickerClass != null) {
@@ -119,7 +125,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
             mPicker = new MaterialImagePicker(this);
         }
         setContentView(mPicker.getLayoutId());
-        mPicker.initUi();
+        mPicker.onViewCreated(findViewById(android.R.id.content));
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         mime.getExtensionFromMimeType(type);
         mManager = new ImageContentManager(this, type);
@@ -138,18 +144,11 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
             case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    init();
+                    initPicker();
                 } else {
-                    Toast.makeText(this, "Failed to request permission", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.weimagepicker__msg_permission_denied, Toast.LENGTH_SHORT).show();
                     finish();
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
                 }
-                return;
-
         }
     }
 
@@ -192,7 +191,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
     }
 
     protected final boolean hasMaxLimit() {
-        return getMaxImageNumber() > 0;
+        return getMaxImageNumber() > NO_LIMIT;
     }
 
     @Override
@@ -247,7 +246,7 @@ public class ImagePickerActivity extends AppCompatActivity implements LoaderMana
         }
     }
 
-    public void done(@NonNull Uri[] uris) {
+    public void onFinish(@NonNull Uri[] uris) {
         if (uris.length > 0) {
             Intent data = new Intent();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {

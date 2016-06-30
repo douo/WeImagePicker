@@ -25,7 +25,7 @@ public class CustomPickerActivity extends ImagePickerActivity {
     }
 
     @Override
-    public void done(@NonNull Uri[] uris) {
+    public void onFinish(@NonNull Uri[] uris) {
         StringBuilder builder = new StringBuilder();
         for (Uri uri : uris) {
             builder.append(uri.toString()).append('\n');

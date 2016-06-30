@@ -39,16 +39,16 @@ public class MaterialImagePicker extends ImagePicker {
     }
 
     @Override
-    protected void initUi() {
+    protected void onViewCreated(View contentView) {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        mActivity.setSupportActionBar(toolbar);
-        mActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
+        mContext.setSupportActionBar(toolbar);
+        mContext.getSupportActionBar().setDisplayShowTitleEnabled(false);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(mActivity, 3);
+        GridLayoutManager layoutManager = new GridLayoutManager(mContext, 3);
         mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-                                            int space = mActivity.getResources().getDimensionPixelSize(R.dimen.weimagepicker__grid_item_margin);
+                                            int space = mContext.getResources().getDimensionPixelSize(R.dimen.weimagepicker__grid_item_margin);
 
                                             @Override
                                             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -61,15 +61,15 @@ public class MaterialImagePicker extends ImagePicker {
         );
         mRecyclerView.setLayoutManager(layoutManager);
         mImageCallback = createImageCallback();
-        mAdapter = new ImageAdapter(mActivity.getSupportActionBar().getThemedContext(), null, mActivity.isShowCameraButton(), mImageCallback);
+        mAdapter = new ImageAdapter(mContext.getSupportActionBar().getThemedContext(), null, mContext.isShowCameraButton(), mImageCallback);
         mRecyclerView.setAdapter(mAdapter);
         mBucketSpinner = (Spinner) findViewById(R.id.toolbar_spinner);
         mBucketSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 d("onItemSelected:" + position);
-                mImageCallback.setCurrentBucket(mActivity.getBuckets().get(position));
-                mActivity.switchBucket(position);
+                mImageCallback.setCurrentBucket(mContext.getBuckets().get(position));
+                mContext.switchBucket(position);
             }
 
             @Override
@@ -80,23 +80,23 @@ public class MaterialImagePicker extends ImagePicker {
     }
 
     protected DefaultImageCallback createImageCallback() {
-        return new DefaultImageCallback(mActivity, mActivity.getSelectedBucket(), mActivity.getMaxImageNumber()) {
+        return new DefaultImageCallback(mContext, mContext.getSelectedBucket(), mContext.getMaxImageNumber()) {
             @Override
             public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
                 super.onImageSelect(holder, imageId, position);
-                mActivity.supportInvalidateOptionsMenu();
+                MaterialImagePicker.this.mContext.supportInvalidateOptionsMenu();
             }
 
             @Override
             public void onCameraPhotoSaved(Uri uri) {
                 mSelectedBucket.add(ContentUris.parseId(uri));
-                mActivity.done(mSelectedBucket.toUriArray());
+                MaterialImagePicker.this.mContext.onFinish(mSelectedBucket.toUriArray());
             }
 
             @Override
             public void onSelectedBucketUpdated(SelectedBucket selectedBucket) {
                 mAdapter.notifyDataSetChanged();
-                mActivity.supportInvalidateOptionsMenu();
+                MaterialImagePicker.this.mContext.supportInvalidateOptionsMenu();
             }
         };
     }
@@ -106,8 +106,8 @@ public class MaterialImagePicker extends ImagePicker {
         StringBuilder sb = new StringBuilder();
         DebugUtils.buildShortClassTag(loader, sb);
         System.out.println(sb);
-        if (mActivity.getCurrentBucket() instanceof DeviceImageBucket) {
-            mAdapter.setShowCameraButton(mActivity.isShowCameraButton());
+        if (mContext.getCurrentBucket() instanceof DeviceImageBucket) {
+            mAdapter.setShowCameraButton(mContext.isShowCameraButton());
         } else {
             mAdapter.setShowCameraButton(false);
         }
@@ -128,13 +128,13 @@ public class MaterialImagePicker extends ImagePicker {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.action_done);
-        int count = mActivity.getSelectedBucket().getCount();
+        int count = mContext.getSelectedBucket().getCount();
         if (count > 0) {
             item.setVisible(true);
-            if (mActivity.hasMaxLimit()) {
-                item.setTitle(mActivity.getString(R.string.weimagepicker__action_done_limit, count, mActivity.getMaxImageNumber()));
+            if (mContext.hasMaxLimit()) {
+                item.setTitle(mContext.getString(R.string.weimagepicker__action_done_limit, count, mContext.getMaxImageNumber()));
             } else {
-                item.setTitle(mActivity.getString(R.string.weimagepicker__action_done, count));
+                item.setTitle(mContext.getString(R.string.weimagepicker__action_done, count));
             }
         } else {
             item.setVisible(false);
@@ -145,7 +145,7 @@ public class MaterialImagePicker extends ImagePicker {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_done) {
-            mActivity.done(mActivity.getSelectedBucket().toUriArray());
+            mContext.onFinish(mContext.getSelectedBucket().toUriArray());
             return true;
         } else {
             return false;
@@ -154,13 +154,13 @@ public class MaterialImagePicker extends ImagePicker {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        mActivity.getMenuInflater().inflate(R.menu.weimagepicker__menu_image_picker, menu);
+        mContext.getMenuInflater().inflate(R.menu.weimagepicker__menu_image_picker, menu);
         return true;
     }
 
     @Override
     public void prepared(List<Bucket> buckets) {
-        BucketAdapter adapter = new BucketAdapter(mActivity, buckets);
+        BucketAdapter adapter = new BucketAdapter(mContext, buckets);
         mBucketSpinner.setAdapter(adapter);
     }
 

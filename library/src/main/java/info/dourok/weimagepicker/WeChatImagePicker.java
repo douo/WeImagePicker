@@ -41,15 +41,15 @@ public class WeChatImagePicker extends ImagePicker {
     }
 
     @Override
-    protected void initUi() {
+    protected void onViewCreated(View contentView) {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        mActivity.setSupportActionBar(toolbar);
-        mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mContext.setSupportActionBar(toolbar);
+        mContext.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(mActivity, 3);
+        GridLayoutManager layoutManager = new GridLayoutManager(mContext, 3);
         mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-                                            int space = mActivity.getResources().getDimensionPixelSize(R.dimen.weimagepicker__grid_item_margin);
+                                            int space = mContext.getResources().getDimensionPixelSize(R.dimen.weimagepicker__grid_item_margin);
 
                                             @Override
                                             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -62,16 +62,16 @@ public class WeChatImagePicker extends ImagePicker {
         );
         mRecyclerView.setLayoutManager(layoutManager);
         mImageCallback = createImageCallback();
-        mAdapter = new ImageAdapter(mActivity.getSupportActionBar().getThemedContext(), null, mActivity.isShowCameraButton(), mImageCallback);
+        mAdapter = new ImageAdapter(mContext.getSupportActionBar().getThemedContext(), null, mContext.isShowCameraButton(), mImageCallback);
         mRecyclerView.setAdapter(mAdapter);
         mBucketSpinner = (Spinner) findViewById(R.id.toolbar_spinner);
         mBucketSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 d("onItemSelected:" + position);
-                mImageCallback.setCurrentBucket(mActivity.getBuckets().get(position));
-                mActivity.setTitle(mActivity.getBuckets().get(position).getName());
-                mActivity.switchBucket(position);
+                mImageCallback.setCurrentBucket(mContext.getBuckets().get(position));
+                mContext.setTitle(mContext.getBuckets().get(position).getName());
+                mContext.switchBucket(position);
             }
 
             @Override
@@ -91,34 +91,34 @@ public class WeChatImagePicker extends ImagePicker {
     }
 
     private void refreshPreviewButton() {
-        if (mActivity.getSelectedBucket().getCount() == 0) {
+        if (mContext.getSelectedBucket().getCount() == 0) {
             mPreviewBtn.setEnabled(false);
             mPreviewBtn.setText(R.string.weimagepicker__name_preview_no_selection);
         } else {
             mPreviewBtn.setEnabled(true);
-            mPreviewBtn.setText(mActivity.getString(R.string.weimagepicker__name_preview, mActivity.getSelectedBucket().getCount()));
+            mPreviewBtn.setText(mContext.getString(R.string.weimagepicker__name_preview, mContext.getSelectedBucket().getCount()));
         }
     }
 
     protected DefaultImageCallback createImageCallback() {
-        return new DefaultImageCallback(mActivity, mActivity.getSelectedBucket(), mActivity.getMaxImageNumber()) {
+        return new DefaultImageCallback(mContext, mContext.getSelectedBucket(), mContext.getMaxImageNumber()) {
             @Override
             public void onImageSelect(ImageViewHolder holder, long imageId, int position) {
                 super.onImageSelect(holder, imageId, position);
-                mActivity.supportInvalidateOptionsMenu();
+                WeChatImagePicker.this.mContext.supportInvalidateOptionsMenu();
                 refreshPreviewButton();
             }
 
             @Override
             public void onCameraPhotoSaved(Uri uri) {
                 mSelectedBucket.add(ContentUris.parseId(uri));
-                mActivity.done(mSelectedBucket.toUriArray());
+                WeChatImagePicker.this.mContext.onFinish(mSelectedBucket.toUriArray());
             }
 
             @Override
             public void onSelectedBucketUpdated(SelectedBucket selectedBucket) {
                 mAdapter.notifyDataSetChanged();
-                mActivity.supportInvalidateOptionsMenu();
+                WeChatImagePicker.this.mContext.supportInvalidateOptionsMenu();
                 refreshPreviewButton();
             }
         };
@@ -126,8 +126,8 @@ public class WeChatImagePicker extends ImagePicker {
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (mActivity.getCurrentBucket() instanceof DeviceImageBucket) {
-            mAdapter.setShowCameraButton(mActivity.isShowCameraButton());
+        if (mContext.getCurrentBucket() instanceof DeviceImageBucket) {
+            mAdapter.setShowCameraButton(mContext.isShowCameraButton());
         } else {
             mAdapter.setShowCameraButton(false);
         }
@@ -149,13 +149,13 @@ public class WeChatImagePicker extends ImagePicker {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.action_done);
         Button btn = (Button) item.getActionView();
-        int count = mActivity.getSelectedBucket().getCount();
+        int count = mContext.getSelectedBucket().getCount();
         if (count > 0) {
             btn.setEnabled(true);
-            if (mActivity.hasMaxLimit()) {
-                btn.setText(mActivity.getString(R.string.weimagepicker__action_done_limit, count, mActivity.getMaxImageNumber()));
+            if (mContext.hasMaxLimit()) {
+                btn.setText(mContext.getString(R.string.weimagepicker__action_done_limit, count, mContext.getMaxImageNumber()));
             } else {
-                btn.setText(mActivity.getString(R.string.weimagepicker__action_done, count));
+                btn.setText(mContext.getString(R.string.weimagepicker__action_done, count));
             }
         } else {
             btn.setEnabled(false);
@@ -167,7 +167,7 @@ public class WeChatImagePicker extends ImagePicker {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            mActivity.finish();
+            mContext.finish();
             return true;
         } else {
             return false;
@@ -176,13 +176,13 @@ public class WeChatImagePicker extends ImagePicker {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        mActivity.getMenuInflater().inflate(R.menu.weimagepicker__menu_wechat_image_picker, menu);
+        mContext.getMenuInflater().inflate(R.menu.weimagepicker__menu_wechat_image_picker, menu);
         MenuItem item = menu.findItem(R.id.action_done);
         Button btn = (Button) item.getActionView();
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mActivity.done(mActivity.getSelectedBucket().toUriArray());
+                mContext.onFinish(mContext.getSelectedBucket().toUriArray());
             }
         });
         return true;
@@ -190,7 +190,7 @@ public class WeChatImagePicker extends ImagePicker {
 
     @Override
     public void prepared(List<Bucket> buckets) {
-        BucketAdapter adapter = new BucketAdapter(mActivity, buckets);
+        BucketAdapter adapter = new BucketAdapter(mContext, buckets);
         mBucketSpinner.setAdapter(adapter);
     }
 
